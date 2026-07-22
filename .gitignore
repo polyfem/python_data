@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Example outputs
+classic_example/2D/2D_examples_outputs/
+classic_example/3D/3D_examples_outputs/
+runs/
+outputs/
+*_examples_outputs/
+
+# PolyFEM / ParaView outputs
+*.vtu
+*.vtm
+*.pvd
+*.csv
+*.npz
+*.log
+
+# OS metadata
+.DS_Store
+Thumbs.db
