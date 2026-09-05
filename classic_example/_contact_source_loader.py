@@ -31,6 +31,7 @@ class SourcePayloadConfig:
         payload = self.as_dict()
         output = payload.setdefault("output", {})
         output["directory"] = str(workspace)
+        output.setdefault("json", "sim.json")
         log = output.get("log")
         if isinstance(log, dict):
             log["path"] = str(workspace / "polyfem.log")
@@ -58,7 +59,7 @@ def load_contact_source_payload(source_json: Path) -> dict[str, Any]:
     payload = _load_contact_source_payload(source_json)
     _resolve_mesh_paths(payload, source_json.parent)
     _normalize_solver_fallbacks(payload)
-    _normalize_generated_mesh_payloads(payload)
+    _normalize_generated_mesh_payloads(payload, source_json.parent)
     return payload
 
 
@@ -151,7 +152,7 @@ def _normalize_solver_fallbacks(config: dict[str, Any]) -> None:
         linear["solver"] = solver_name[0]
 
 
-def _normalize_generated_mesh_payloads(config: dict[str, Any]) -> None:
+def _normalize_generated_mesh_payloads(config: dict[str, Any], source_dir: Path) -> None:
     geometry = config.get("geometry")
     if not isinstance(geometry, list):
         return
@@ -160,6 +161,8 @@ def _normalize_generated_mesh_payloads(config: dict[str, Any]) -> None:
         if not isinstance(item, dict) or "mesh" not in item:
             continue
         item.setdefault("type", "mesh")
+        _normalize_file_selection(item, "volume_selection", source_dir)
+        _normalize_file_selection(item, "surface_selection", source_dir)
 
         transformation = item.get("transformation")
         if not isinstance(transformation, dict):
@@ -167,3 +170,20 @@ def _normalize_generated_mesh_payloads(config: dict[str, Any]) -> None:
         for field in ("rotation", "scale"):
             if isinstance(transformation.get(field), (int, float)):
                 transformation[field] = [float(transformation[field])]
+
+
+def _normalize_file_selection(item: dict[str, Any], field: str, source_dir: Path) -> None:
+    selection = item.get(field)
+    if isinstance(selection, str):
+        item[field] = {"file": _resolve_source_file_path(selection, source_dir)}
+    elif isinstance(selection, dict):
+        file_path = selection.get("file")
+        if isinstance(file_path, str):
+            selection["file"] = _resolve_source_file_path(file_path, source_dir)
+
+
+def _resolve_source_file_path(path_value: str, source_dir: Path) -> str:
+    path = Path(path_value)
+    if path.is_absolute():
+        return path_value
+    return str((source_dir / path).resolve())

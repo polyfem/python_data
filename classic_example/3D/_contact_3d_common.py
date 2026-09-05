@@ -45,8 +45,13 @@ def config_for_workspace_from(polyfem_config: Any, workspace: Path) -> Any:
     cfg = copy.deepcopy(polyfem_config)
     if isinstance(cfg, SourcePayloadConfig):
         return cfg.with_output_workspace(workspace)
+    if cfg.output is None:
+        cfg.output = polyfem.output(directory=str(workspace), json="sim.json")
+        return cfg
     if cfg.output is not None:
         cfg.output.directory = str(workspace)
+        if cfg.output.json is None:
+            cfg.output.json = "sim.json"
         if cfg.output.log is not None:
             cfg.output.log.path = str(workspace / "polyfem.log")
     return cfg
