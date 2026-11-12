@@ -29,296 +29,213 @@ SOURCE_JSON = CONTACT_EXAMPLES_DIR / "3D" / "friction" / "arch.json"
 
 model = polyfem.model()
 
-material_1 = polyfem.neo_hookean(
-    E=20000000000.0,
-    nu=0.2,
-    rho=2300,
-)
-material_2 = polyfem.neo_hookean(
-    E=20000000000.0,
-    nu=0.2,
-    rho=2300,
-)
+material_1 = polyfem.neo_hookean(E=20000000000.0, nu=0.2, rho=2300)
+material_2 = polyfem.neo_hookean(E=20000000000.0, nu=0.2, rho=2300)
 
 body_1 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "arch" / "largeArch.01.msh"),
-    transformation=polyfem.transformation(
-        translation=[-1.2, -1.2, 0],
-    ),
+    transformation=polyfem.transformation(translation=[-1.2, -1.2, 0]),
     volume_selection=1,
 )
 body_1.material(material_1)
 
 body_2 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "arch" / "largeArch.02.msh"),
-    transformation=polyfem.transformation(
-        translation=[-1.1, -1.1, 0],
-    ),
+    transformation=polyfem.transformation(translation=[-1.1, -1.1, 0]),
     volume_selection=1,
 )
 body_2.material(material_1)
 
 body_3 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "arch" / "largeArch.03.msh"),
-    transformation=polyfem.transformation(
-        translation=[-1, -1, 0],
-    ),
+    transformation=polyfem.transformation(translation=[-1, -1, 0]),
     volume_selection=1,
 )
 body_3.material(material_1)
 
 body_4 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "arch" / "largeArch.04.msh"),
-    transformation=polyfem.transformation(
-        translation=[-0.9, -0.9, 0],
-    ),
+    transformation=polyfem.transformation(translation=[-0.9, -0.9, 0]),
     volume_selection=1,
 )
 body_4.material(material_1)
 
 body_5 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "arch" / "largeArch.05.msh"),
-    transformation=polyfem.transformation(
-        translation=[-0.8, -0.8, 0],
-    ),
+    transformation=polyfem.transformation(translation=[-0.8, -0.8, 0]),
     volume_selection=1,
 )
 body_5.material(material_1)
 
 body_6 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "arch" / "largeArch.06.msh"),
-    transformation=polyfem.transformation(
-        translation=[-0.7, -0.7, 0],
-    ),
+    transformation=polyfem.transformation(translation=[-0.7, -0.7, 0]),
     volume_selection=1,
 )
 body_6.material(material_1)
 
 body_7 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "arch" / "largeArch.07.msh"),
-    transformation=polyfem.transformation(
-        translation=[-0.6, -0.6, 0],
-    ),
+    transformation=polyfem.transformation(translation=[-0.6, -0.6, 0]),
     volume_selection=1,
 )
 body_7.material(material_1)
 
 body_8 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "arch" / "largeArch.08.msh"),
-    transformation=polyfem.transformation(
-        translation=[-0.5, -0.5, 0],
-    ),
+    transformation=polyfem.transformation(translation=[-0.5, -0.5, 0]),
     volume_selection=1,
 )
 body_8.material(material_1)
 
 body_9 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "arch" / "largeArch.09.msh"),
-    transformation=polyfem.transformation(
-        translation=[-0.4, -0.4, 0],
-    ),
+    transformation=polyfem.transformation(translation=[-0.4, -0.4, 0]),
     volume_selection=1,
 )
 body_9.material(material_1)
 
 body_10 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "arch" / "largeArch.10.msh"),
-    transformation=polyfem.transformation(
-        translation=[-0.3, -0.3, 0],
-    ),
+    transformation=polyfem.transformation(translation=[-0.3, -0.3, 0]),
     volume_selection=1,
 )
 body_10.material(material_1)
 
 body_11 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "arch" / "largeArch.11.msh"),
-    transformation=polyfem.transformation(
-        translation=[-0.2, -0.2, 0],
-    ),
+    transformation=polyfem.transformation(translation=[-0.2, -0.2, 0]),
     volume_selection=1,
 )
 body_11.material(material_1)
 
 body_12 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "arch" / "largeArch.12.msh"),
-    transformation=polyfem.transformation(
-        translation=[-0.1, -0.1, 0],
-    ),
+    transformation=polyfem.transformation(translation=[-0.1, -0.1, 0]),
     volume_selection=1,
 )
 body_12.material(material_1)
 
 body_13 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "arch" / "largeArch.13.msh"),
-    transformation=polyfem.transformation(
-        translation=[0, 0, 0],
-    ),
+    transformation=polyfem.transformation(translation=[0, 0, 0]),
     volume_selection=1,
 )
 body_13.material(material_1)
 
 body_14 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "arch" / "largeArch.14.msh"),
-    transformation=polyfem.transformation(
-        translation=[0.1, -0.1, 0],
-    ),
+    transformation=polyfem.transformation(translation=[0.1, -0.1, 0]),
     volume_selection=1,
 )
 body_14.material(material_1)
 
 body_15 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "arch" / "largeArch.15.msh"),
-    transformation=polyfem.transformation(
-        translation=[0.2, -0.2, 0],
-    ),
+    transformation=polyfem.transformation(translation=[0.2, -0.2, 0]),
     volume_selection=1,
 )
 body_15.material(material_1)
 
 body_16 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "arch" / "largeArch.16.msh"),
-    transformation=polyfem.transformation(
-        translation=[0.3, -0.3, 0],
-    ),
+    transformation=polyfem.transformation(translation=[0.3, -0.3, 0]),
     volume_selection=1,
 )
 body_16.material(material_1)
 
 body_17 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "arch" / "largeArch.17.msh"),
-    transformation=polyfem.transformation(
-        translation=[0.4, -0.4, 0],
-    ),
+    transformation=polyfem.transformation(translation=[0.4, -0.4, 0]),
     volume_selection=1,
 )
 body_17.material(material_1)
 
 body_18 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "arch" / "largeArch.18.msh"),
-    transformation=polyfem.transformation(
-        translation=[0.5, -0.5, 0],
-    ),
+    transformation=polyfem.transformation(translation=[0.5, -0.5, 0]),
     volume_selection=1,
 )
 body_18.material(material_1)
 
 body_19 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "arch" / "largeArch.19.msh"),
-    transformation=polyfem.transformation(
-        translation=[0.6, -0.6, 0],
-    ),
+    transformation=polyfem.transformation(translation=[0.6, -0.6, 0]),
     volume_selection=1,
 )
 body_19.material(material_1)
 
 body_20 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "arch" / "largeArch.20.msh"),
-    transformation=polyfem.transformation(
-        translation=[0.7, -0.7, 0],
-    ),
+    transformation=polyfem.transformation(translation=[0.7, -0.7, 0]),
     volume_selection=1,
 )
 body_20.material(material_1)
 
 body_21 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "arch" / "largeArch.21.msh"),
-    transformation=polyfem.transformation(
-        translation=[0.8, -0.8, 0],
-    ),
+    transformation=polyfem.transformation(translation=[0.8, -0.8, 0]),
     volume_selection=1,
 )
 body_21.material(material_1)
 
 body_22 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "arch" / "largeArch.22.msh"),
-    transformation=polyfem.transformation(
-        translation=[0.9, -0.9, 0],
-    ),
+    transformation=polyfem.transformation(translation=[0.9, -0.9, 0]),
     volume_selection=1,
 )
 body_22.material(material_1)
 
 body_23 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "arch" / "largeArch.23.msh"),
-    transformation=polyfem.transformation(
-        translation=[1, -1, 0],
-    ),
+    transformation=polyfem.transformation(translation=[1, -1, 0]),
     volume_selection=1,
 )
 body_23.material(material_1)
 
 body_24 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "arch" / "largeArch.24.msh"),
-    transformation=polyfem.transformation(
-        translation=[1.1, -1.1, 0],
-    ),
+    transformation=polyfem.transformation(translation=[1.1, -1.1, 0]),
     volume_selection=1,
 )
 body_24.material(material_1)
 
 body_25 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "arch" / "largeArch.25.msh"),
-    transformation=polyfem.transformation(
-        translation=[1.2, -1.2, 0],
-    ),
+    transformation=polyfem.transformation(translation=[1.2, -1.2, 0]),
     volume_selection=1,
 )
 body_25.material(material_1)
 
 body_26 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "simple" / "cube.msh"),
-    transformation=polyfem.transformation(
-        translation=[-36, -6.4, 0],
-        scale=[10, 10, 10],
-    ),
+    transformation=polyfem.transformation(translation=[-36, -6.4, 0], scale=[10, 10, 10]),
     volume_selection=2,
 )
 body_26.material(material_2)
-body_26_surface_2 = body_26.surface_all(
-    id=2,
-)
+body_26_surface_2 = body_26.surface_all(id=2)
 
 body_27 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "simple" / "cube.msh"),
-    transformation=polyfem.transformation(
-        translation=[36, -6.4, 0],
-        scale=[10, 10, 10],
-    ),
+    transformation=polyfem.transformation(translation=[36, -6.4, 0], scale=[10, 10, 10]),
     volume_selection=2,
 )
 body_27.material(material_2)
-body_27_surface_2 = body_27.surface_all(
-    id=2,
-)
+body_27_surface_2 = body_27.surface_all(id=2)
 
-body_26_surface_2.dirichlet(
-    value=[0, 0, 0],
-)
+body_26_surface_2.dirichlet(value=[0, 0, 0])
 
 polyfem_config = model.config(
-    contact=polyfem.contact(
-        enabled=True,
-        dhat=1e-06,
-        epsv=1e-05,
-        friction_coefficient=0.5,
-    ),
+    contact=polyfem.contact(enabled=True, dhat=1e-06, epsv=1e-05, friction_coefficient=0.5),
     solver=polyfem.solver(
-        linear=polyfem.linear(
-            solver='Eigen::PardisoLDLT',
-        ),
+        linear=polyfem.linear(solver='Eigen::PardisoLDLT'),
         nonlinear=polyfem.nonlinear(
             iterations_per_strategy=1,
-            line_search=polyfem.line_search(
-                method='RobustArmijo',
-            ),
+            line_search=polyfem.line_search(method='RobustArmijo'),
             solver='Newton',
         ),
-        advanced=polyfem.solver_advanced(
-            lump_mass_matrix=True,
-        ),
-        contact=polyfem.solver_contact(
-            friction_iterations=10,
-        ),
+        advanced=polyfem.solver_advanced(lump_mass_matrix=True),
+        contact=polyfem.solver_contact(friction_iterations=10),
     ),
     output=polyfem.output(
         json='sim.json',
@@ -338,12 +255,7 @@ polyfem_config = model.config(
             save_time_sequence=True,
         ),
     ),
-    time=polyfem.time(
-        polyfem.object1(
-            tend=20,
-            dt=0.01,
-        ),
-    ),
+    time=polyfem.time(polyfem.object1(tend=20, dt=0.01)),
     rhs=[0, 9.81, 0],
 )
 

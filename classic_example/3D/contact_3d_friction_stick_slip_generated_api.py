@@ -29,11 +29,7 @@ SOURCE_JSON = CONTACT_EXAMPLES_DIR / "3D" / "friction" / "stick-slip.json"
 
 model = polyfem.model()
 
-material_1 = polyfem.neo_hookean(
-    E=10000000.0,
-    nu=0.4,
-    rho=1000,
-)
+material_1 = polyfem.neo_hookean(E=10000000.0, nu=0.4, rho=1000)
 
 body_1 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "table.msh"),
@@ -57,30 +53,16 @@ model.obstacle_mesh(
 )
 
 polyfem_config = model.config(
-    contact=polyfem.contact(
-        enabled=True,
-        dhat=0.001,
-        epsv=1e-05,
-        friction_coefficient=0.15,
-    ),
+    contact=polyfem.contact(enabled=True, dhat=0.001, epsv=1e-05, friction_coefficient=0.15),
     solver=polyfem.solver(
-        linear=polyfem.linear(
-            solver='Eigen::PardisoLDLT',
-        ),
+        linear=polyfem.linear(solver='Eigen::PardisoLDLT'),
         nonlinear=polyfem.nonlinear(
             iterations_per_strategy=1,
-            line_search=polyfem.line_search(
-                method='RobustArmijo',
-            ),
+            line_search=polyfem.line_search(method='RobustArmijo'),
             solver='Newton',
         ),
-        advanced=polyfem.solver_advanced(
-            lump_mass_matrix=True,
-        ),
-        contact=polyfem.solver_contact(
-            friction_convergence_tol=0.01,
-            friction_iterations=-1,
-        ),
+        advanced=polyfem.solver_advanced(lump_mass_matrix=True),
+        contact=polyfem.solver_contact(friction_convergence_tol=0.01, friction_iterations=-1),
     ),
     output=polyfem.output(
         json='sim.json',
@@ -100,12 +82,7 @@ polyfem_config = model.config(
             save_time_sequence=True,
         ),
     ),
-    time=polyfem.time(
-        polyfem.object1(
-            dt=0.025,
-            tend=5,
-        ),
-    ),
+    time=polyfem.time(polyfem.object1(dt=0.025, tend=5)),
     rhs=[0, 9.81, 0],
 )
 

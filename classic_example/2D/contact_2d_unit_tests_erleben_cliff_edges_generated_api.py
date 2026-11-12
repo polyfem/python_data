@@ -29,48 +29,31 @@ SOURCE_JSON = CONTACT_EXAMPLES_DIR / "2D" / "unit-tests" / "erleben" / "cliff-ed
 
 model = polyfem.model()
 
-material_1 = polyfem.neo_hookean(
-    E=1000000.0,
-    nu=0.4,
-    rho=1000,
-)
+material_1 = polyfem.neo_hookean(E=1000000.0, nu=0.4, rho=1000)
 
 body_1 = model.mesh(
     mesh=str(MESHES_DIR / "2D" / "simple" / "square.obj"),
-    transformation=polyfem.transformation(
-        translation=[0, 0.05],
-    ),
+    transformation=polyfem.transformation(translation=[0, 0.05]),
     volume_selection=1,
 )
 body_1.material(material_1)
 
 model.obstacle_mesh(
     mesh=str(MESHES_DIR / "2D" / "simple" / "erleben" / "cliff.obj"),
-    transformation=polyfem.transformation(
-        translation=[0, -1],
-    ),
+    transformation=polyfem.transformation(translation=[0, -1]),
     surface_selection=0,
 )
 
 polyfem_config = model.config(
-    contact=polyfem.contact(
-        enabled=True,
-        dhat=0.001,
-    ),
+    contact=polyfem.contact(enabled=True, dhat=0.001),
     solver=polyfem.solver(
-        linear=polyfem.linear(
-            solver='Eigen::PardisoLDLT',
-        ),
+        linear=polyfem.linear(solver='Eigen::PardisoLDLT'),
         nonlinear=polyfem.nonlinear(
             iterations_per_strategy=1,
-            line_search=polyfem.line_search(
-                method='RobustArmijo',
-            ),
+            line_search=polyfem.line_search(method='RobustArmijo'),
             solver='Newton',
         ),
-        advanced=polyfem.solver_advanced(
-            lump_mass_matrix=True,
-        ),
+        advanced=polyfem.solver_advanced(lump_mass_matrix=True),
     ),
     output=polyfem.output(
         json='sim.json',
@@ -90,12 +73,7 @@ polyfem_config = model.config(
             save_time_sequence=True,
         ),
     ),
-    time=polyfem.time(
-        polyfem.object1(
-            dt=0.025,
-            tend=2.5,
-        ),
-    ),
+    time=polyfem.time(polyfem.object1(dt=0.025, tend=2.5)),
     rhs=[0, 9.81],
 )
 

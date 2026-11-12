@@ -30,10 +30,7 @@ SOURCE_JSON = CONTACT_EXAMPLES_DIR / "3D" / "pile" / "octocat-bowl.json"
 model = polyfem.model()
 
 model.mesh_array(
-    array=polyfem.array(
-        offset=1.75,
-        size=[1, 3, 1],
-    ),
+    array=polyfem.array(offset=1.75, size=[1, 3, 1]),
     mesh=str(MESHES_DIR / "3D" / "creatures" / "octocat.msh"),
     transformation=polyfem.mesh_array_transformation(
         rotation=[-90, 0, 0],
@@ -42,29 +39,18 @@ model.mesh_array(
     ),
 )
 
-model.obstacle_mesh(
-    mesh=str(MESHES_DIR / "3D" / "obstacles" / "bowl.obj"),
-)
+model.obstacle_mesh(mesh=str(MESHES_DIR / "3D" / "obstacles" / "bowl.obj"))
 
 polyfem_config = model.config(
-    contact=polyfem.contact(
-        enabled=True,
-        dhat=0.001,
-    ),
+    contact=polyfem.contact(enabled=True, dhat=0.001),
     solver=polyfem.solver(
-        linear=polyfem.linear(
-            solver='Eigen::PardisoLDLT',
-        ),
+        linear=polyfem.linear(solver='Eigen::PardisoLDLT'),
         nonlinear=polyfem.nonlinear(
             iterations_per_strategy=1,
-            line_search=polyfem.line_search(
-                method='RobustArmijo',
-            ),
+            line_search=polyfem.line_search(method='RobustArmijo'),
             solver='Newton',
         ),
-        advanced=polyfem.solver_advanced(
-            lump_mass_matrix=True,
-        ),
+        advanced=polyfem.solver_advanced(lump_mass_matrix=True),
     ),
     output=polyfem.output(
         json='sim.json',
@@ -86,19 +72,10 @@ polyfem_config = model.config(
     ),
     materials=polyfem.materials(
         items=[
-            polyfem.neo_hookean(
-                E=100000.0,
-                nu=0.4,
-                rho=1000,
-            ),
+            polyfem.neo_hookean(E=100000.0, nu=0.4, rho=1000),
         ],
     ),
-    time=polyfem.time(
-        polyfem.object1(
-            dt=0.07,
-            tend=7,
-        ),
-    ),
+    time=polyfem.time(polyfem.object1(dt=0.07, tend=7)),
     rhs=[0, 9.81, 0],
 )
 

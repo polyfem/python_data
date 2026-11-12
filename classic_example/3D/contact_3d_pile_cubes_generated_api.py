@@ -30,44 +30,24 @@ SOURCE_JSON = CONTACT_EXAMPLES_DIR / "3D" / "pile" / "cubes.json"
 model = polyfem.model()
 
 model.mesh_array(
-    array=polyfem.array(
-        offset=1.01,
-        relative=True,
-        size=[4, 4, 4],
-    ),
+    array=polyfem.array(offset=1.01, relative=True, size=[4, 4, 4]),
     mesh=str(MESHES_DIR / "3D" / "simple" / "cube.msh"),
-    transformation=polyfem.mesh_array_transformation(
-        scale=[0.25],
-        translation=[-0.375, 0, -0.375],
-    ),
+    transformation=polyfem.mesh_array_transformation(scale=[0.25], translation=[-0.375, 0, -0.375]),
 )
 
-model.obstacle_mesh(
-    mesh=str(MESHES_DIR / "3D" / "obstacles" / "bowl.obj"),
-)
+model.obstacle_mesh(mesh=str(MESHES_DIR / "3D" / "obstacles" / "bowl.obj"))
 
 polyfem_config = model.config(
-    contact=polyfem.contact(
-        enabled=True,
-        dhat=0.001,
-    ),
+    contact=polyfem.contact(enabled=True, dhat=0.001),
     solver=polyfem.solver(
-        linear=polyfem.linear(
-            solver='Eigen::PardisoLDLT',
-        ),
+        linear=polyfem.linear(solver='Eigen::PardisoLDLT'),
         nonlinear=polyfem.nonlinear(
             iterations_per_strategy=1,
-            line_search=polyfem.line_search(
-                method='RobustArmijo',
-            ),
+            line_search=polyfem.line_search(method='RobustArmijo'),
             solver='Newton',
-            Newton=polyfem.newton(
-                force_psd_projection=True,
-            ),
+            Newton=polyfem.newton(force_psd_projection=True),
         ),
-        advanced=polyfem.solver_advanced(
-            lump_mass_matrix=True,
-        ),
+        advanced=polyfem.solver_advanced(lump_mass_matrix=True),
     ),
     output=polyfem.output(
         json='sim.json',
@@ -90,19 +70,10 @@ polyfem_config = model.config(
     ),
     materials=polyfem.materials(
         items=[
-            polyfem.neo_hookean(
-                E=100000.0,
-                nu=0.4,
-                rho=1000,
-            ),
+            polyfem.neo_hookean(E=100000.0, nu=0.4, rho=1000),
         ],
     ),
-    time=polyfem.time(
-        polyfem.object1(
-            dt=0.01,
-            tend=5.0,
-        ),
-    ),
+    time=polyfem.time(polyfem.object1(dt=0.01, tend=5.0)),
     rhs=[0, 9.81, 0],
 )
 

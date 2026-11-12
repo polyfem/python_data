@@ -38,11 +38,7 @@ body_1 = model.mesh(
     ),
     volume_selection=1,
 )
-body_1_surface_1 = body_1.surface_box(
-    box=[[0.97, 0, 0], [1, 1, 1]],
-    id=1,
-    relative=True,
-)
+body_1_surface_1 = body_1.surface_box(box=[[0.97, 0, 0], [1, 1, 1]], id=1, relative=True)
 
 model.obstacle_mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "funnel.obj"),
@@ -60,26 +56,17 @@ body_1_surface_1.dirichlet(
 )
 
 polyfem_config = model.config(
-    contact=polyfem.contact(
-        enabled=True,
-        dhat=0.001,
-    ),
+    contact=polyfem.contact(enabled=True, dhat=0.001),
     solver=polyfem.solver(
-        linear=polyfem.linear(
-            solver='Eigen::PardisoLDLT',
-        ),
+        linear=polyfem.linear(solver='Eigen::PardisoLDLT'),
         nonlinear=polyfem.nonlinear(
             iterations_per_strategy=1,
-            line_search=polyfem.line_search(
-                method='RobustArmijo',
-            ),
+            line_search=polyfem.line_search(method='RobustArmijo'),
             solver='Newton',
             max_iterations=10000,
             norm_type='Linf',
         ),
-        advanced=polyfem.solver_advanced(
-            lump_mass_matrix=True,
-        ),
+        advanced=polyfem.solver_advanced(lump_mass_matrix=True),
         augmented_lagrangian=polyfem.augmented_lagrangian(
             nonlinear=polyfem.augmented_lagrangian_nonlinear(
                 max_iterations=100,
@@ -107,19 +94,10 @@ polyfem_config = model.config(
     ),
     materials=polyfem.materials(
         items=[
-            polyfem.neo_hookean(
-                E=10000,
-                nu=0.4,
-                rho=1000,
-            ),
+            polyfem.neo_hookean(E=10000, nu=0.4, rho=1000),
         ],
     ),
-    time=polyfem.time(
-        polyfem.object1(
-            dt=0.04,
-            tend=32,
-        ),
-    ),
+    time=polyfem.time(polyfem.object1(dt=0.04, tend=32)),
     rhs=[0, 0, 0],
 )
 

@@ -66,10 +66,7 @@ right_roller.surface_all(id=2).dirichlet(
 ground = model.mesh(
     mesh=str(MESHES_DIR / "2D" / "simple" / "square.obj"),
     enabled=True,
-    transformation=polyfem.transformation(
-        translation=[0, -4.01],
-        scale=[8, 0.02],
-    ),
+    transformation=polyfem.transformation(translation=[0, -4.01], scale=[8, 0.02]),
 )
 ground.material(steel)
 ground.surface_all(id=3).dirichlet(value=[0, 0])

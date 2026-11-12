@@ -29,81 +29,44 @@ SOURCE_JSON = CONTACT_EXAMPLES_DIR / "2D" / "large-ratios" / "large-stiffness-ra
 
 model = polyfem.model()
 
-material_1 = polyfem.neo_hookean(
-    E=10000,
-    nu=0.4,
-    rho=1000,
-)
-material_2 = polyfem.neo_hookean(
-    E=100000000.0,
-    nu=0.4,
-    rho=2000,
-)
-material_3 = polyfem.neo_hookean(
-    E=200000000000.0,
-    nu=0.3,
-    rho=7750,
-)
+material_1 = polyfem.neo_hookean(E=10000, nu=0.4, rho=1000)
+material_2 = polyfem.neo_hookean(E=100000000.0, nu=0.4, rho=2000)
+material_3 = polyfem.neo_hookean(E=200000000000.0, nu=0.3, rho=7750)
 
 body_1 = model.mesh(
     mesh=str(MESHES_DIR / "2D" / "simple" / "bar" / "bar792.obj"),
-    transformation=polyfem.transformation(
-        rotation=[0.0],
-        scale=[1.0],
-        translation=[0, 0.51],
-    ),
+    transformation=polyfem.transformation(rotation=[0.0], scale=[1.0], translation=[0, 0.51]),
     volume_selection=1,
 )
 body_1.material(material_1)
 
 body_2 = model.mesh(
     mesh=str(MESHES_DIR / "2D" / "simple" / "bar" / "bar792.obj"),
-    transformation=polyfem.transformation(
-        rotation=[90.0],
-        scale=[1.0],
-        translation=[0, 0, 0],
-    ),
+    transformation=polyfem.transformation(rotation=[90.0], scale=[1.0], translation=[0, 0, 0]),
     volume_selection=2,
 )
 body_2.material(material_2)
 
 body_3 = model.mesh(
     mesh=str(MESHES_DIR / "2D" / "simple" / "square.obj"),
-    transformation=polyfem.transformation(
-        scale=[2, 0.01],
-        translation=[0, -0.56, 0],
-    ),
+    transformation=polyfem.transformation(scale=[2, 0.01], translation=[0, -0.56, 0]),
     volume_selection=3,
 )
 body_3.material(material_3)
-body_3_surface_1 = body_3.surface_all(
-    id=1,
-)
+body_3_surface_1 = body_3.surface_all(id=1)
 
-body_3_surface_1.dirichlet(
-    value=[0, 0],
-)
+body_3_surface_1.dirichlet(value=[0, 0])
 
 polyfem_config = model.config(
-    contact=polyfem.contact(
-        enabled=True,
-        dhat=0.001,
-        friction_coefficient=0.1,
-    ),
+    contact=polyfem.contact(enabled=True, dhat=0.001, friction_coefficient=0.1),
     solver=polyfem.solver(
-        linear=polyfem.linear(
-            solver='Eigen::PardisoLDLT',
-        ),
+        linear=polyfem.linear(solver='Eigen::PardisoLDLT'),
         nonlinear=polyfem.nonlinear(
             iterations_per_strategy=1,
-            line_search=polyfem.line_search(
-                method='RobustArmijo',
-            ),
+            line_search=polyfem.line_search(method='RobustArmijo'),
             solver='Newton',
         ),
-        advanced=polyfem.solver_advanced(
-            lump_mass_matrix=True,
-        ),
+        advanced=polyfem.solver_advanced(lump_mass_matrix=True),
     ),
     output=polyfem.output(
         json='sim.json',
@@ -123,12 +86,7 @@ polyfem_config = model.config(
             save_time_sequence=True,
         ),
     ),
-    time=polyfem.time(
-        polyfem.object3(
-            tend=3,
-            time_steps=120,
-        ),
-    ),
+    time=polyfem.time(polyfem.object3(tend=3, time_steps=120)),
     rhs=[0, 9.81],
 )
 

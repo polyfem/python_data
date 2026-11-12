@@ -29,36 +29,24 @@ SOURCE_JSON = CONTACT_EXAMPLES_DIR / "3D" / "higher-order" / "microstructure.jso
 
 model = polyfem.model()
 
-material_1 = polyfem.neo_hookean(
-    E=6000000.0,
-    nu=0.48,
-    rho=1.03,
-)
+material_1 = polyfem.neo_hookean(E=6000000.0, nu=0.48, rho=1.03)
 
 body_1 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "microstructure" / "P4.msh"),
-    transformation=polyfem.transformation(
-        scale=[6.0],
-    ),
+    transformation=polyfem.transformation(scale=[6.0]),
     volume_selection=1,
 )
 body_1.material(material_1)
 
 body_2_surface_1000 = model.obstacle_mesh(
     mesh=str(MESHES_DIR / "3D" / "simple" / "cube.msh"),
-    transformation=polyfem.transformation(
-        translation=[3, 6.12, 3],
-        dimensions=[9, 0.2, 9],
-    ),
+    transformation=polyfem.transformation(dimensions=[9, 0.2, 9], translation=[3, 6.12, 3]),
     surface_selection=1000,
 )
 
 model.obstacle_mesh(
     mesh=str(MESHES_DIR / "3D" / "simple" / "cube.msh"),
-    transformation=polyfem.transformation(
-        translation=[3, -0.12, 3],
-        dimensions=[9, 0.2, 9],
-    ),
+    transformation=polyfem.transformation(dimensions=[9, 0.2, 9], translation=[3, -0.12, 3]),
 )
 
 body_2_surface_1000.obstacle_displacement(
@@ -69,28 +57,22 @@ polyfem_config = model.config(
     contact=polyfem.contact(
         enabled=True,
         dhat=0.001,
-        friction_coefficient=0.3,
         collision_mesh=polyfem.collision_mesh(
             polyfem.collision_mesh_object2(
                 max_edge_length=0.1,
                 tessellation_type='irregular',
             ),
         ),
+        friction_coefficient=0.3,
     ),
     solver=polyfem.solver(
-        linear=polyfem.linear(
-            solver='Eigen::PardisoLDLT',
-        ),
+        linear=polyfem.linear(solver='Eigen::PardisoLDLT'),
         nonlinear=polyfem.nonlinear(
             iterations_per_strategy=1,
-            line_search=polyfem.line_search(
-                method='RobustArmijo',
-            ),
+            line_search=polyfem.line_search(method='RobustArmijo'),
             solver='Newton',
         ),
-        advanced=polyfem.solver_advanced(
-            lump_mass_matrix=False,
-        ),
+        advanced=polyfem.solver_advanced(lump_mass_matrix=False),
     ),
     output=polyfem.output(
         json='sim.json',
@@ -112,15 +94,8 @@ polyfem_config = model.config(
             save_time_sequence=True,
         ),
     ),
-    space=polyfem.space(
-        discr_order=2,
-    ),
-    time=polyfem.time(
-        polyfem.object1(
-            tend=2,
-            dt=0.01,
-        ),
-    ),
+    space=polyfem.space(discr_order=2),
+    time=polyfem.time(polyfem.object1(dt=0.01, tend=2)),
     rhs=[0, 9800, 0],
 )
 

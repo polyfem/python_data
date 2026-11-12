@@ -31,44 +31,24 @@ model = polyfem.model()
 
 body_1 = model.geometry_mesh(
     mesh=str(MESHES_DIR / "2D" / "simple" / "square.obj"),
-    transformation=polyfem.transformation(
-        translation=[0, 0],
-        rotation=[-30.0],
-        scale=[5, 0.02],
-    ),
+    transformation=polyfem.transformation(translation=[0, 0], rotation=[-30.0], scale=[5, 0.02]),
 )
-body_1_surface_1 = body_1.surface_all(
-    id=1,
-)
+body_1_surface_1 = body_1.surface_all(id=1)
 
 model.geometry_mesh(
     mesh=str(MESHES_DIR / "2D" / "simple" / "square1K.msh"),
-    transformation=polyfem.transformation(
-        translation=[0.26, 0.4503],
-        rotation=[-30.0],
-        scale=[1.0],
-    ),
+    transformation=polyfem.transformation(translation=[0.26, 0.4503], rotation=[-30.0], scale=[1.0]),
 )
 
-body_1_surface_1.dirichlet(
-    value=[0, 0],
-)
+body_1_surface_1.dirichlet(value=[0, 0])
 
 polyfem_config = model.config(
-    contact=polyfem.contact(
-        enabled=True,
-        dhat=0.001,
-        friction_coefficient=0.6,
-    ),
+    contact=polyfem.contact(enabled=True, dhat=0.001, friction_coefficient=0.6),
     solver=polyfem.solver(
-        linear=polyfem.linear(
-            solver='Eigen::PardisoLDLT',
-        ),
+        linear=polyfem.linear(solver='Eigen::PardisoLDLT'),
         nonlinear=polyfem.nonlinear(
             iterations_per_strategy=1,
-            line_search=polyfem.line_search(
-                method='RobustArmijo',
-            ),
+            line_search=polyfem.line_search(method='RobustArmijo'),
             solver='Newton',
             max_iterations=300,
             norm_type='Euclidean',
@@ -76,9 +56,7 @@ polyfem_config = model.config(
             first_grad_norm_tol=1e-10,
             grad_norm_tol=1e-05,
             x_delta_tol=1e-12,
-            advanced=polyfem.nonlinear_advanced(
-                f_delta_tol=1e-05,
-            ),
+            advanced=polyfem.nonlinear_advanced(f_delta_tol=1e-05),
         ),
         advanced=polyfem.solver_advanced(
             lump_mass_matrix=True,
@@ -112,11 +90,7 @@ polyfem_config = model.config(
     ),
     materials=polyfem.materials(
         items=[
-            polyfem.neo_hookean(
-                E=70000000.0,
-                nu=0.48,
-                rho=1240,
-            ),
+            polyfem.neo_hookean(E=70000000.0, nu=0.48, rho=1240),
         ],
     ),
     rhs=[0, 9.81],

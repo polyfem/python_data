@@ -31,11 +31,7 @@ model = polyfem.model()
 
 body_1 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "creatures" / "alien.msh"),
-    transformation=polyfem.transformation(
-        translation=[0, -1.05, 0],
-        rotation=[0, 0, 0],
-        scale=[0.45],
-    ),
+    transformation=polyfem.transformation(translation=[0, -1.05, 0], rotation=[0, 0, 0], scale=[0.45]),
     volume_selection=1,
 )
 
@@ -61,56 +57,33 @@ body_3 = model.mesh(
 
 body_4 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "creatures" / "octocat.msh"),
-    transformation=polyfem.transformation(
-        translation=[0, 1.9, 0],
-        rotation=[-90, 0, 0],
-        scale=[0.01],
-    ),
+    transformation=polyfem.transformation(translation=[0, 1.9, 0], rotation=[-90, 0, 0], scale=[0.01]),
     volume_selection=4,
 )
 
 body_5_surface_1000 = model.obstacle_mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "unit-plane.obj"),
-    transformation=polyfem.transformation(
-        translation=[-1, 2.25, -1],
-        rotation=[0, 0, 0],
-        scale=[2.0],
-    ),
+    transformation=polyfem.transformation(translation=[-1, 2.25, -1], rotation=[0, 0, 0], scale=[2.0]),
     surface_selection=1000,
 )
 
 model.obstacle_mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "coneBox.obj"),
-    transformation=polyfem.transformation(
-        translation=[0, -2, 0],
-        rotation=[0, 0, -90],
-        scale=[1.15],
-    ),
+    transformation=polyfem.transformation(translation=[0, -2, 0], rotation=[0, 0, -90], scale=[1.15]),
 )
 
-body_5_surface_1000.obstacle_displacement(
-    value=[0, 'max(-0.3 * t, -3.79)', 0],
-)
+body_5_surface_1000.obstacle_displacement(value=[0, 'max(-0.3 * t, -3.79)', 0])
 
 polyfem_config = model.config(
-    contact=polyfem.contact(
-        enabled=True,
-        dhat=0.001,
-    ),
+    contact=polyfem.contact(enabled=True, dhat=0.001),
     solver=polyfem.solver(
-        linear=polyfem.linear(
-            solver='Eigen::PardisoLDLT',
-        ),
+        linear=polyfem.linear(solver='Eigen::PardisoLDLT'),
         nonlinear=polyfem.nonlinear(
             iterations_per_strategy=1,
-            line_search=polyfem.line_search(
-                method='RobustArmijo',
-            ),
+            line_search=polyfem.line_search(method='RobustArmijo'),
             solver='Newton',
         ),
-        advanced=polyfem.solver_advanced(
-            lump_mass_matrix=True,
-        ),
+        advanced=polyfem.solver_advanced(lump_mass_matrix=True),
     ),
     output=polyfem.output(
         json='sim.json',
@@ -130,19 +103,10 @@ polyfem_config = model.config(
             save_time_sequence=True,
         ),
     ),
-    time=polyfem.time(
-        polyfem.object1(
-            tend=15,
-            dt=0.01,
-        ),
-    ),
+    time=polyfem.time(polyfem.object1(tend=15, dt=0.01)),
     materials=polyfem.materials(
         items=[
-            polyfem.neo_hookean(
-                E=50000,
-                nu=0.4,
-                rho=1000,
-            ),
+            polyfem.neo_hookean(E=50000, nu=0.4, rho=1000),
         ],
     ),
     rhs=[0, 9.81, 0],

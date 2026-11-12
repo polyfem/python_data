@@ -29,63 +29,36 @@ SOURCE_JSON = CONTACT_EXAMPLES_DIR / "2D" / "convergence" / "sliding-spike.json"
 
 model = polyfem.model()
 
-material_1 = polyfem.neo_hookean(
-    E=100000.0,
-    nu=0.3,
-    rho=7750,
-)
+material_1 = polyfem.neo_hookean(E=100000.0, nu=0.3, rho=7750)
 
 body_1 = model.mesh(
     mesh=str(MESHES_DIR / "2D" / "simple" / "erleben" / "spike.obj"),
-    transformation=polyfem.transformation(
-        rotation=[180.0],
-        translation=[-5, 2.0001],
-    ),
+    transformation=polyfem.transformation(rotation=[180.0], translation=[-5, 2.0001]),
     volume_selection=1,
 )
 body_1.material(material_1)
-body_1_surface_1 = body_1.surface_axis(
-    axis=2,
-    id=1,
-    position=2,
-)
+body_1_surface_1 = body_1.surface_axis(axis=2, id=1, position=2)
 
 model.obstacle_mesh(
     mesh=str(MESHES_DIR / "2D" / "obstacles" / "line.obj"),
     n_refs=6,
-    transformation=polyfem.transformation(
-        translation=[0, -1],
-    ),
+    transformation=polyfem.transformation(translation=[0, -1]),
     surface_selection=0,
 )
 
-body_1_surface_1.dirichlet(
-    value=['10*t', 0],
-)
+body_1_surface_1.dirichlet(value=['10*t', 0])
 
 polyfem_config = model.config(
-    contact=polyfem.contact(
-        enabled=True,
-        dhat=0.001,
-        use_convergent_formulation=True,
-    ),
+    contact=polyfem.contact(enabled=True, dhat=0.001, use_convergent_formulation=True),
     solver=polyfem.solver(
-        linear=polyfem.linear(
-            solver='Eigen::PardisoLDLT',
-        ),
+        linear=polyfem.linear(solver='Eigen::PardisoLDLT'),
         nonlinear=polyfem.nonlinear(
             iterations_per_strategy=1,
-            line_search=polyfem.line_search(
-                method='RobustArmijo',
-            ),
+            line_search=polyfem.line_search(method='RobustArmijo'),
             solver='Newton',
         ),
-        advanced=polyfem.solver_advanced(
-            lump_mass_matrix=True,
-        ),
-        contact=polyfem.solver_contact(
-            barrier_stiffness=10000.0,
-        ),
+        advanced=polyfem.solver_advanced(lump_mass_matrix=True),
+        contact=polyfem.solver_contact(barrier_stiffness=10000.0),
     ),
     output=polyfem.output(
         json='sim.json',
@@ -105,13 +78,7 @@ polyfem_config = model.config(
             save_time_sequence=True,
         ),
     ),
-    time=polyfem.time(
-        polyfem.object3(
-            time_steps=400,
-            tend=1,
-            quasistatic=True,
-        ),
-    ),
+    time=polyfem.time(polyfem.object3(quasistatic=True, tend=1, time_steps=400)),
     rhs=[0, 9.81],
 )
 

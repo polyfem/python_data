@@ -31,44 +31,26 @@ model = polyfem.model()
 
 body_1 = model.geometry_mesh(
     mesh=str(MESHES_DIR / "3D" / "simple" / "cube.msh"),
-    transformation=polyfem.transformation(
-        translation=[0, 0, 0],
-    ),
+    transformation=polyfem.transformation(translation=[0, 0, 0]),
     n_refs=2,
 )
-body_1_surface_1 = body_1.surface_axis(
-    id=1,
-    axis=-2,
-    position=-0.499,
-)
+body_1_surface_1 = body_1.surface_axis(id=1, axis=-2, position=-0.499)
 
 model.geometry_mesh(
     mesh=str(MESHES_DIR / "3D" / "simple" / "cube.msh"),
-    transformation=polyfem.transformation(
-        translation=[0, 1.2, 0],
-    ),
+    transformation=polyfem.transformation(translation=[0, 1.2, 0]),
     n_refs=2,
 )
 
-body_1_surface_1.dirichlet(
-    value=[0, 0, 0],
-)
+body_1_surface_1.dirichlet(value=[0, 0, 0])
 
 polyfem_config = model.config(
-    contact=polyfem.contact(
-        enabled=True,
-        dhat=0.001,
-        friction_coefficient=0.5,
-    ),
+    contact=polyfem.contact(enabled=True, dhat=0.001, friction_coefficient=0.5),
     solver=polyfem.solver(
-        linear=polyfem.linear(
-            solver='Eigen::SimplicialLDLT',
-        ),
+        linear=polyfem.linear(solver='Eigen::SimplicialLDLT'),
         nonlinear=polyfem.nonlinear(
             iterations_per_strategy=1,
-            line_search=polyfem.line_search(
-                method='RobustArmijo',
-            ),
+            line_search=polyfem.line_search(method='RobustArmijo'),
             solver='Newton',
             grad_norm_tol=1e-05,
         ),
@@ -77,10 +59,7 @@ polyfem_config = model.config(
             lagged_regularization_weight=500,
             lagged_regularization_iterations=2,
         ),
-        contact=polyfem.solver_contact(
-            friction_iterations=-1,
-            barrier_stiffness=1000000000.0,
-        ),
+        contact=polyfem.solver_contact(friction_iterations=-1, barrier_stiffness=1000000000.0),
     ),
     output=polyfem.output(
         json='sim.json',
@@ -103,11 +82,7 @@ polyfem_config = model.config(
     ),
     materials=polyfem.materials(
         items=[
-            polyfem.neo_hookean(
-                E=100000,
-                nu=0.4,
-                rho=1000,
-            ),
+            polyfem.neo_hookean(E=100000, nu=0.4, rho=1000),
         ],
     ),
     rhs=[0, 9.81, 0],

@@ -29,29 +29,13 @@ SOURCE_JSON = CONTACT_EXAMPLES_DIR / "2D" / "friction" / "card-house.json"
 
 model = polyfem.model()
 
-material_1 = polyfem.neo_hookean(
-    E=100000000.0,
-    nu=0.4,
-    rho=1000,
-)
-material_2 = polyfem.neo_hookean(
-    E=100000000.0,
-    nu=0.4,
-    rho=1000,
-)
-material_3 = polyfem.neo_hookean(
-    E=200000000000.0,
-    nu=0.3,
-    rho=7750,
-)
+material_1 = polyfem.neo_hookean(E=100000000.0, nu=0.4, rho=1000)
+material_2 = polyfem.neo_hookean(E=100000000.0, nu=0.4, rho=1000)
+material_3 = polyfem.neo_hookean(E=200000000000.0, nu=0.3, rho=7750)
 
 body_1 = model.mesh(
     mesh=str(MESHES_DIR / "2D" / "simple" / "bar" / "bar40.obj"),
-    transformation=polyfem.transformation(
-        translation=[0, 0],
-        rotation=[60.0],
-        dimensions=[1, 0.013],
-    ),
+    transformation=polyfem.transformation(translation=[0, 0], rotation=[60.0], dimensions=[1, 0.013]),
     volume_selection=1,
 )
 body_1.material(material_1)
@@ -125,11 +109,7 @@ body_7.material(material_1)
 body_8 = model.mesh(
     mesh=str(MESHES_DIR / "2D" / "simple" / "square.obj"),
     enabled=True,
-    transformation=polyfem.transformation(
-        translation=[0.2, 6],
-        rotation=[0.0],
-        scale=[0.4],
-    ),
+    transformation=polyfem.transformation(translation=[0.2, 6], rotation=[0.0], scale=[0.4]),
     volume_selection=2,
 )
 body_8.material(material_2)
@@ -137,57 +117,32 @@ body_8.material(material_2)
 body_9 = model.mesh(
     mesh=str(MESHES_DIR / "2D" / "simple" / "square.obj"),
     enabled=True,
-    transformation=polyfem.transformation(
-        translation=[0.5, 9],
-        rotation=[0.0],
-        scale=[0.4],
-    ),
+    transformation=polyfem.transformation(translation=[0.5, 9], rotation=[0.0], scale=[0.4]),
     volume_selection=2,
 )
 body_9.material(material_2)
 
 body_10 = model.mesh(
     mesh=str(MESHES_DIR / "2D" / "simple" / "square.obj"),
-    transformation=polyfem.transformation(
-        translation=[0.7725, -0.4515],
-        dimensions=[4, 0.013],
-    ),
+    transformation=polyfem.transformation(translation=[0.7725, -0.4515], dimensions=[4, 0.013]),
     volume_selection=3,
 )
 body_10.material(material_3)
-body_10_surface_1 = body_10.surface_all(
-    id=1,
-)
+body_10_surface_1 = body_10.surface_all(id=1)
 
-body_10_surface_1.dirichlet(
-    value=[0, 0],
-)
+body_10_surface_1.dirichlet(value=[0, 0])
 
 polyfem_config = model.config(
-    contact=polyfem.contact(
-        enabled=True,
-        dhat=0.0001,
-        epsv=1e-05,
-        friction_coefficient=0.9,
-    ),
+    contact=polyfem.contact(enabled=True, dhat=0.0001, epsv=1e-05, friction_coefficient=0.9),
     solver=polyfem.solver(
-        linear=polyfem.linear(
-            solver='Eigen::PardisoLDLT',
-        ),
+        linear=polyfem.linear(solver='Eigen::PardisoLDLT'),
         nonlinear=polyfem.nonlinear(
             iterations_per_strategy=1,
-            line_search=polyfem.line_search(
-                method='RobustArmijo',
-            ),
+            line_search=polyfem.line_search(method='RobustArmijo'),
             solver='Newton',
         ),
-        advanced=polyfem.solver_advanced(
-            lump_mass_matrix=True,
-        ),
-        contact=polyfem.solver_contact(
-            friction_iterations=2,
-            friction_convergence_tol=0.01,
-        ),
+        advanced=polyfem.solver_advanced(lump_mass_matrix=True),
+        contact=polyfem.solver_contact(friction_iterations=2, friction_convergence_tol=0.01),
     ),
     output=polyfem.output(
         json='sim.json',
@@ -207,12 +162,7 @@ polyfem_config = model.config(
             save_time_sequence=True,
         ),
     ),
-    time=polyfem.time(
-        polyfem.object1(
-            tend=5,
-            dt=0.025,
-        ),
-    ),
+    time=polyfem.time(polyfem.object1(tend=5, dt=0.025)),
     rhs=[0, 9.81],
 )
 
