@@ -11,6 +11,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
+import polyfem
+
 EXAMPLE_DIR = Path(__file__).resolve().parent
 if str(EXAMPLE_DIR) not in sys.path:
     sys.path.insert(0, str(EXAMPLE_DIR))
@@ -19,7 +21,6 @@ from _contact_2d_common import (  # noqa: E402
     CONTACT_EXAMPLES_DIR,
     MESHES_DIR,
     config_for_workspace_from,
-    polyfem,
     run_solve,
 )
 
@@ -70,6 +71,14 @@ polyfem_config = model.config(
             ),
             solver='Newton',
             max_iterations=300,
+            norm_type='Euclidean',
+            rel_grad_norm_tol=0,
+            first_grad_norm_tol=1e-10,
+            grad_norm_tol=1e-05,
+            x_delta_tol=1e-12,
+            advanced=polyfem.nonlinear_advanced(
+                f_delta_tol=1e-05,
+            ),
         ),
         advanced=polyfem.solver_advanced(
             lump_mass_matrix=True,

@@ -7,7 +7,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from polyfempy.generated_api import generated_api as polyfem
+import polyfem
 
 
 class SourcePayloadConfig:

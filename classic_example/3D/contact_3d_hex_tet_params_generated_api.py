@@ -11,6 +11,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
+import polyfem
+
 EXAMPLE_DIR = Path(__file__).resolve().parent
 if str(EXAMPLE_DIR) not in sys.path:
     sys.path.insert(0, str(EXAMPLE_DIR))
@@ -19,7 +21,6 @@ from _contact_3d_common import (  # noqa: E402
     CONTACT_EXAMPLES_DIR,
     MESHES_DIR,
     config_for_workspace_from,
-    polyfem,
     run_solve,
 )
 
@@ -27,56 +28,6 @@ from _contact_3d_common import (  # noqa: E402
 SOURCE_JSON = CONTACT_EXAMPLES_DIR / "3D" / "hex_tet" / "params.json"
 
 polyfem_config = polyfem.config(
-    geometry=polyfem.geometry(
-        items=[
-            polyfem.mesh(
-                mesh=str(CONTACT_EXAMPLES_DIR / "3D" / "hex_tet" / "hexcube.msh"),
-                volume_selection=11,
-                transformation=polyfem.transformation(
-                    translation=[0.0, 0.0, 0.0],
-                    rotation=[0.0, 0.0, 0.0],
-                    scale=[1.0, 1.0, 1.0],
-                ),
-                surface_selection=polyfem.surface_selection(
-                    polyfem.surface_selection_file(
-                        file=str(CONTACT_EXAMPLES_DIR / "3D" / "hex_tet" / "surface_sidesets11.txt"),
-                    ),
-                ),
-            ),
-            polyfem.mesh(
-                mesh=str(CONTACT_EXAMPLES_DIR / "3D" / "hex_tet" / "cube.msh"),
-                volume_selection=21,
-                transformation=polyfem.transformation(
-                    translation=[0.0, 1.3, 0.0],
-                    rotation=[0.0, 0.0, 0.0],
-                    scale=[1.0, 1.0, 1.0],
-                ),
-            ),
-        ],
-    ),
-    materials=polyfem.materials(
-        items=[
-            polyfem.neo_hookean(
-                id=11,
-                E=100000.0,
-                nu=0.45,
-                rho=1000.0,
-            ),
-            polyfem.neo_hookean(
-                id=21,
-                E=100000.0,
-                nu=0.45,
-                rho=1000.0,
-            ),
-        ],
-    ),
-    time=polyfem.time(
-        polyfem.object1(
-            tend=5.0,
-            dt=0.025,
-            integrator='ImplicitEuler',
-        ),
-    ),
     contact=polyfem.contact(
         enabled=True,
         dhat=0.001,
@@ -84,17 +35,100 @@ polyfem_config = polyfem.config(
         friction_coefficient=0.0,
         use_convergent_formulation=False,
     ),
+    solver=polyfem.solver(
+        linear=polyfem.linear(
+            solver='Eigen::PardisoLDLT',
+        ),
+        nonlinear=polyfem.nonlinear(
+            iterations_per_strategy=1,
+            line_search=polyfem.line_search(
+                method='RobustArmijo',
+            ),
+            solver='Newton',
+        ),
+        advanced=polyfem.solver_advanced(
+            lump_mass_matrix=True,
+        ),
+    ),
+    output=polyfem.output(
+        json='sim.json',
+        paraview=polyfem.output_paraview(
+            file_name='sim.pvd',
+            options=polyfem.options(
+                material=True,
+                body_ids=True,
+                tensor_values=False,
+                discretization_order=False,
+                nodes=False,
+            ),
+            vismesh_rel_area=10000000,
+        ),
+        advanced=polyfem.output_advanced(
+            save_solve_sequence_debug=False,
+            save_time_sequence=True,
+        ),
+    ),
     boundary_conditions=polyfem.boundary_conditions(
         dirichlet_boundary=polyfem.dirichlet_boundary(
             items=[
                 polyfem.item(
+                    dimension=[True, True, True],
                     id=1111,
                     value=[0, 0, 0],
-                    dimension=[True, True, True],
                 ),
             ],
         ),
         rhs=[0, 9.8, 0],
+    ),
+    geometry=polyfem.geometry(
+        items=[
+            polyfem.mesh(
+                mesh=str(CONTACT_EXAMPLES_DIR / "3D" / "hex_tet" / "hexcube.msh"),
+                surface_selection=polyfem.surface_selection(
+                    polyfem.surface_selection_file(
+                        file=str(CONTACT_EXAMPLES_DIR / "3D" / "hex_tet" / "surface_sidesets11.txt"),
+                    ),
+                ),
+                transformation=polyfem.transformation(
+                    rotation=[0.0, 0.0, 0.0],
+                    scale=[1.0, 1.0, 1.0],
+                    translation=[0.0, 0.0, 0.0],
+                ),
+                volume_selection=11,
+            ),
+            polyfem.mesh(
+                mesh=str(CONTACT_EXAMPLES_DIR / "3D" / "hex_tet" / "cube.msh"),
+                transformation=polyfem.transformation(
+                    rotation=[0.0, 0.0, 0.0],
+                    scale=[1.0, 1.0, 1.0],
+                    translation=[0.0, 1.3, 0.0],
+                ),
+                volume_selection=21,
+            ),
+        ],
+    ),
+    materials=polyfem.materials(
+        items=[
+            polyfem.neo_hookean(
+                E=100000.0,
+                id=11,
+                nu=0.45,
+                rho=1000.0,
+            ),
+            polyfem.neo_hookean(
+                E=100000.0,
+                id=21,
+                nu=0.45,
+                rho=1000.0,
+            ),
+        ],
+    ),
+    time=polyfem.time(
+        polyfem.object1(
+            dt=0.025,
+            integrator='ImplicitEuler',
+            tend=5.0,
+        ),
     ),
 )
 

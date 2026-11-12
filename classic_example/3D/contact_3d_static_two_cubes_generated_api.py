@@ -11,6 +11,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
+import polyfem
+
 EXAMPLE_DIR = Path(__file__).resolve().parent
 if str(EXAMPLE_DIR) not in sys.path:
     sys.path.insert(0, str(EXAMPLE_DIR))
@@ -18,110 +20,97 @@ if str(EXAMPLE_DIR) not in sys.path:
 from _contact_3d_common import (  # noqa: E402
     CONTACT_EXAMPLES_DIR,
     MESHES_DIR,
-    SourcePayloadConfig,
     config_for_workspace_from,
-    polyfem,
     run_solve,
 )
 
 
 SOURCE_JSON = CONTACT_EXAMPLES_DIR / "3D" / "static" / "two-cubes.json"
 
-# This source shape is not yet expressible by the generated API schema.
-UNSUPPORTED_GENERATED_API_PAYLOAD = {
-    'contact': {
-        'enabled': True,
-        'dhat': 0.001,
-        'friction_coefficient': 0.5,
-    },
-    'solver': {
-        'linear': {
-            'solver': 'Eigen::SimplicialLDLT',
-        },
-        'nonlinear': {
-            'iterations_per_strategy': 1,
-            'line_search': {
-                'method': 'RobustArmijo',
-            },
-            'solver': 'Newton',
-            'use_grad_norm': 1e-05,
-        },
-        'advanced': {
-            'lump_mass_matrix': True,
-            'lagged_regularization_weight': 500,
-            'lagged_regularization_iterations': 2,
-        },
-        'contact': {
-            'friction_iterations': -1,
-            'barrier_stiffness': 1000000000.0,
-        },
-    },
-    'output': {
-        'json': 'sim.json',
-        'paraview': {
-            'file_name': 'sol.vtu',
-            'options': {
-                'material': True,
-                'body_ids': True,
-                'tensor_values': False,
-                'discretization_order': False,
-                'nodes': False,
-            },
-            'vismesh_rel_area': 10000000,
-        },
-        'advanced': {
-            'save_solve_sequence_debug': True,
-            'save_time_sequence': False,
-            'save_nl_solve_sequence': False,
-        },
-    },
-    'geometry': [
-        {
-            'mesh': str(MESHES_DIR / "3D" / "simple" / "cube.msh"),
-            'transformation': {
-                'translation': [0, 0, 0],
-            },
-            'n_refs': 2,
-            'surface_selection': [
-                {
-                    'id': 1,
-                    'axis': -2,
-                    'position': -0.499,
-                },
-            ],
-            'type': 'mesh',
-        },
-        {
-            'mesh': str(MESHES_DIR / "3D" / "simple" / "cube.msh"),
-            'transformation': {
-                'translation': [0, 1.2, 0],
-            },
-            'n_refs': 2,
-            'type': 'mesh',
-        },
-    ],
-    'boundary_conditions': {
-        'rhs': [0, 9.81, 0],
-        'dirichlet_boundary': [
-            {
-                'id': 1,
-                'value': [0, 0, 0],
-            },
-        ],
-    },
-    'materials': {
-        'type': 'NeoHookean',
-        'E': 100000,
-        'nu': 0.4,
-        'rho': 1000,
-    },
-}
+model = polyfem.model()
 
-GENERATED_API_FALLBACK_REASON = "Root.Solver.Nonlinear.__init__() got an unexpected keyword argument 'use_grad_norm'"
-polyfem_config = SourcePayloadConfig(
-    UNSUPPORTED_GENERATED_API_PAYLOAD,
-    source_json=SOURCE_JSON,
-    fallback_reason=GENERATED_API_FALLBACK_REASON,
+body_1 = model.geometry_mesh(
+    mesh=str(MESHES_DIR / "3D" / "simple" / "cube.msh"),
+    transformation=polyfem.transformation(
+        translation=[0, 0, 0],
+    ),
+    n_refs=2,
+)
+body_1_surface_1 = body_1.surface_axis(
+    id=1,
+    axis=-2,
+    position=-0.499,
+)
+
+model.geometry_mesh(
+    mesh=str(MESHES_DIR / "3D" / "simple" / "cube.msh"),
+    transformation=polyfem.transformation(
+        translation=[0, 1.2, 0],
+    ),
+    n_refs=2,
+)
+
+body_1_surface_1.dirichlet(
+    value=[0, 0, 0],
+)
+
+polyfem_config = model.config(
+    contact=polyfem.contact(
+        enabled=True,
+        dhat=0.001,
+        friction_coefficient=0.5,
+    ),
+    solver=polyfem.solver(
+        linear=polyfem.linear(
+            solver='Eigen::SimplicialLDLT',
+        ),
+        nonlinear=polyfem.nonlinear(
+            iterations_per_strategy=1,
+            line_search=polyfem.line_search(
+                method='RobustArmijo',
+            ),
+            solver='Newton',
+            grad_norm_tol=1e-05,
+        ),
+        advanced=polyfem.solver_advanced(
+            lump_mass_matrix=True,
+            lagged_regularization_weight=500,
+            lagged_regularization_iterations=2,
+        ),
+        contact=polyfem.solver_contact(
+            friction_iterations=-1,
+            barrier_stiffness=1000000000.0,
+        ),
+    ),
+    output=polyfem.output(
+        json='sim.json',
+        paraview=polyfem.output_paraview(
+            file_name='sol.vtu',
+            options=polyfem.options(
+                material=True,
+                body_ids=True,
+                tensor_values=False,
+                discretization_order=False,
+                nodes=False,
+            ),
+            vismesh_rel_area=10000000,
+        ),
+        advanced=polyfem.output_advanced(
+            save_solve_sequence_debug=True,
+            save_time_sequence=False,
+            save_nl_solve_sequence=False,
+        ),
+    ),
+    materials=polyfem.materials(
+        items=[
+            polyfem.neo_hookean(
+                E=100000,
+                nu=0.4,
+                rho=1000,
+            ),
+        ],
+    ),
+    rhs=[0, 9.81, 0],
 )
 
 

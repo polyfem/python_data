@@ -11,6 +11,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
+import polyfem
+
 EXAMPLE_DIR = Path(__file__).resolve().parent
 if str(EXAMPLE_DIR) not in sys.path:
     sys.path.insert(0, str(EXAMPLE_DIR))
@@ -19,7 +21,6 @@ from _contact_3d_common import (  # noqa: E402
     CONTACT_EXAMPLES_DIR,
     MESHES_DIR,
     config_for_workspace_from,
-    polyfem,
     run_solve,
 )
 
