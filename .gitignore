@@ -4,6 +4,7 @@ __pycache__/
 .pytest_cache/
 
 # Example outputs
+/output/*/spline_target_*.obj
 classic_example/2D/2D_examples_outputs/
 classic_example/3D/3D_examples_outputs/
 runs/
