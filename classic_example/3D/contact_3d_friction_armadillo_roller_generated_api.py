@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import Any
 
 import polyfem
+from polyfempy.runtime import solve
 
 EXAMPLE_DIR = Path(__file__).resolve().parent
 if str(EXAMPLE_DIR) not in sys.path:
@@ -20,8 +20,6 @@ if str(EXAMPLE_DIR) not in sys.path:
 from _contact_3d_common import (  # noqa: E402
     CONTACT_EXAMPLES_DIR,
     MESHES_DIR,
-    config_for_workspace_from,
-    run_solve,
 )
 
 
@@ -34,38 +32,31 @@ material_1 = polyfem.neo_hookean(E=100000, nu=0.2, rho=1000)
 body_1 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "creatures" / "armadillo" / "armadillo_verschoor.msh"),
     transformation=polyfem.transformation(translation=[0, 0, 0], scale=[1.0]),
-    volume_selection=1,
 )
 body_1.material(material_1)
 
-body_2_surface_1000 = model.obstacle_mesh(
+obstacle_2 = model.obstacle_mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "verschoor" / "roller0.obj"),
-    surface_selection=1000,
 )
 
-body_3_surface_1001 = model.obstacle_mesh(
+obstacle_3 = model.obstacle_mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "verschoor" / "roller1.obj"),
-    surface_selection=1001,
 )
 
-body_4_surface_1002 = model.obstacle_mesh(
+obstacle_4 = model.obstacle_mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "verschoor" / "roller2.obj"),
-    surface_selection=1002,
 )
 
-body_5_surface_1003 = model.obstacle_mesh(
+obstacle_5 = model.obstacle_mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "verschoor" / "roller3.obj"),
-    surface_selection=1003,
 )
 
-body_6_surface_1004 = model.obstacle_mesh(
+obstacle_6 = model.obstacle_mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "verschoor" / "roller4.obj"),
-    surface_selection=1004,
 )
 
-body_7_surface_1005 = model.obstacle_mesh(
+obstacle_7 = model.obstacle_mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "verschoor" / "roller5.obj"),
-    surface_selection=1005,
 )
 
 model.obstacle_mesh(
@@ -73,42 +64,42 @@ model.obstacle_mesh(
     transformation=polyfem.transformation(translation=[0, 0.2, 0], dimensions=[8, 0, 8]),
 )
 
-body_2_surface_1000.obstacle_displacement(
+obstacle_2.obstacle_displacement(
     value=[
         'rotate_2D_x(x + 2.0/3.0, y - 1, -4 * t) - 2.0/3.0 - x',
         'rotate_2D_y(x + 2.0/3.0, y - 1, -4 * t) + 1 - y',
         0,
     ],
 )
-body_3_surface_1001.obstacle_displacement(
+obstacle_3.obstacle_displacement(
     value=[
         'rotate_2D_x(x + 13.0/60.0, y - 1, -2 * t) - 13.0/60.0 - x',
         'rotate_2D_y(x + 13.0/60.0, y - 1, -2 * t) + 1 - y',
         0,
     ],
 )
-body_4_surface_1002.obstacle_displacement(
+obstacle_4.obstacle_displacement(
     value=[
         'rotate_2D_x(x - 13.0/60.0, y - 1, 2 * t) + 13.0/60.0 - x',
         'rotate_2D_y(x - 13.0/60.0, y - 1, 2 * t) + 1 - y',
         0,
     ],
 )
-body_5_surface_1003.obstacle_displacement(
+obstacle_5.obstacle_displacement(
     value=[
         'rotate_2D_x(x - 2.0/3.0, y - 1, 4 * t) + 2.0/3.0 - x',
         'rotate_2D_y(x - 2.0/3.0, y - 1, 4 * t) + 1 - y',
         0,
     ],
 )
-body_6_surface_1004.obstacle_displacement(
+obstacle_6.obstacle_displacement(
     value=[
         0,
         'rotate_2D_x(y - 19.0/30.0, z + 13.0/60.0, 2 * t) + 19.0/30.0 - y',
         'rotate_2D_y(y - 19.0/30.0, z + 13.0/60.0, 2 * t) - 13.0/60.0 - z',
     ],
 )
-body_7_surface_1005.obstacle_displacement(
+obstacle_7.obstacle_displacement(
     value=[
         0,
         'rotate_2D_x(y - 19.0/30.0, z - 13.0/60.0, -2 * t) + 19.0/30.0 - y',
@@ -148,19 +139,12 @@ polyfem_config = model.config(
             save_solve_sequence_debug=False,
             save_time_sequence=True,
         ),
+        directory='results/3D/friction/armadillo-roller',
     ),
     time=polyfem.time(polyfem.object1(tend=10, dt=0.025)),
     rhs=[0, 9.81, 0],
 )
 
 
-def config_for_workspace(workspace: Path) -> Any:
-    return config_for_workspace_from(polyfem_config, workspace)
-
-
-def main() -> int:
-    return run_solve(polyfem_config, "contact_3d_friction_armadillo_roller_generated_api")
-
-
 if __name__ == "__main__":
-    raise SystemExit(main())
+    solve(cfg=polyfem_config)

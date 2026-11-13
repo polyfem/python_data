@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import Any
 
 import polyfem
+from polyfempy.runtime import solve
 
 EXAMPLE_DIR = Path(__file__).resolve().parent
 if str(EXAMPLE_DIR) not in sys.path:
@@ -20,8 +20,6 @@ if str(EXAMPLE_DIR) not in sys.path:
 from _contact_3d_common import (  # noqa: E402
     CONTACT_EXAMPLES_DIR,
     MESHES_DIR,
-    config_for_workspace_from,
-    run_solve,
 )
 
 
@@ -59,14 +57,12 @@ material_2 = polyfem.material_sum(
 body_1 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "simple" / "sphere" / "coarse" / "icosphere.msh"),
     transformation=polyfem.transformation(scale=[1.0], translation=[0, 0, 0]),
-    volume_selection=1,
 )
 body_1.material(material_1)
 
 body_2 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "simple" / "sphere" / "coarse" / "icosphere.msh"),
     transformation=polyfem.transformation(scale=[0.3], translation=[-1.6, 0, 0]),
-    volume_selection=2,
 )
 body_2.material(material_2)
 
@@ -100,6 +96,7 @@ polyfem_config = model.config(
             save_solve_sequence_debug=False,
             save_time_sequence=True,
         ),
+        directory='results/3D/stress-tests/spheres_collide-P2',
     ),
     time=polyfem.time(polyfem.object1(tend=1, dt=0.01)),
     space=polyfem.space(discr_order=2),
@@ -107,13 +104,5 @@ polyfem_config = model.config(
 )
 
 
-def config_for_workspace(workspace: Path) -> Any:
-    return config_for_workspace_from(polyfem_config, workspace)
-
-
-def main() -> int:
-    return run_solve(polyfem_config, "contact_3d_stress_tests_spheres_collide_p2_generated_api")
-
-
 if __name__ == "__main__":
-    raise SystemExit(main())
+    solve(cfg=polyfem_config)

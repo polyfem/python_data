@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import Any
 
 import polyfem
+from polyfempy.runtime import solve
 
 EXAMPLE_DIR = Path(__file__).resolve().parent
 if str(EXAMPLE_DIR) not in sys.path:
@@ -20,8 +20,6 @@ if str(EXAMPLE_DIR) not in sys.path:
 from _contact_3d_common import (  # noqa: E402
     CONTACT_EXAMPLES_DIR,
     MESHES_DIR,
-    config_for_workspace_from,
-    run_solve,
 )
 
 
@@ -34,7 +32,7 @@ body_1 = model.geometry_mesh(
     transformation=polyfem.transformation(translation=[0, 0, 0]),
     n_refs=2,
 )
-body_1_surface_1 = body_1.surface_axis(id=1, axis=-2, position=-0.499)
+body_1_surface_1 = body_1.surface_axis(axis=-2, position=-0.499)
 
 model.geometry_mesh(
     mesh=str(MESHES_DIR / "3D" / "simple" / "cube.msh"),
@@ -79,6 +77,7 @@ polyfem_config = model.config(
             save_time_sequence=False,
             save_nl_solve_sequence=False,
         ),
+        directory='results/3D/static/two-cubes',
     ),
     materials=polyfem.materials(
         items=[
@@ -89,13 +88,5 @@ polyfem_config = model.config(
 )
 
 
-def config_for_workspace(workspace: Path) -> Any:
-    return config_for_workspace_from(polyfem_config, workspace)
-
-
-def main() -> int:
-    return run_solve(polyfem_config, "contact_3d_static_two_cubes_generated_api")
-
-
 if __name__ == "__main__":
-    raise SystemExit(main())
+    solve(cfg=polyfem_config)

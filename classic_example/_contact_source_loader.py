@@ -27,20 +27,6 @@ class SourcePayloadConfig:
     def as_dict(self) -> dict[str, Any]:
         return copy.deepcopy(self._payload)
 
-    def with_output_workspace(self, workspace: Path) -> "SourcePayloadConfig":
-        payload = self.as_dict()
-        output = payload.setdefault("output", {})
-        output["directory"] = str(workspace)
-        output.setdefault("json", "sim.json")
-        log = output.get("log")
-        if isinstance(log, dict):
-            log["path"] = str(workspace / "polyfem.log")
-        return SourcePayloadConfig(
-            payload,
-            source_json=self.source_json,
-            fallback_reason=self.fallback_reason,
-        )
-
 
 def load_polyfem_config(source_json: Path) -> Any:
     payload = load_contact_source_payload(source_json)

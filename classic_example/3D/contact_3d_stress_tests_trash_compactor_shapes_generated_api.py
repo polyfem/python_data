@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import Any
 
 import polyfem
+from polyfempy.runtime import solve
 
 EXAMPLE_DIR = Path(__file__).resolve().parent
 if str(EXAMPLE_DIR) not in sys.path:
@@ -20,8 +20,6 @@ if str(EXAMPLE_DIR) not in sys.path:
 from _contact_3d_common import (  # noqa: E402
     CONTACT_EXAMPLES_DIR,
     MESHES_DIR,
-    config_for_workspace_from,
-    run_solve,
 )
 
 
@@ -32,91 +30,70 @@ model = polyfem.model()
 body_1 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "simple" / "sphere" / "sphere5K.msh"),
     transformation=polyfem.transformation(translation=[-0.48, 0, 0], rotation=[0, 0, 0], scale=[1.0]),
-    volume_selection=1,
 )
 
 body_2 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "simple" / "mat" / "mat40x40.msh"),
     transformation=polyfem.transformation(translation=[0.04, 0, 0], rotation=[0, 0, 90], scale=[1.0]),
-    volume_selection=2,
 )
 
 body_3 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "creatures" / "bunny.msh"),
     transformation=polyfem.transformation(translation=[0.63, 0, 0], rotation=[0, 0, 0], scale=[0.3]),
-    volume_selection=3,
 )
 
-body_4_surface_1000 = model.obstacle_mesh(
+obstacle_4 = model.obstacle_mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "unit-plane.obj"),
     transformation=polyfem.transformation(
         translation=[-1, 1.5, -1.5],
         rotation=[0, 0, -90],
         scale=[3.0],
     ),
-    surface_selection=1000,
 )
 
-body_5_surface_1001 = model.obstacle_mesh(
+obstacle_5 = model.obstacle_mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "unit-plane.obj"),
     transformation=polyfem.transformation(
         translation=[1, 1.5, -1.5],
         rotation=[0, 0, -90],
         scale=[3.0],
     ),
-    surface_selection=1001,
 )
 
-body_6_surface_1002 = model.obstacle_mesh(
+obstacle_6 = model.obstacle_mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "unit-plane.obj"),
     transformation=polyfem.transformation(
         translation=[-1.5, -1, -1.5],
         rotation=[0, 0, 0],
         scale=[3.0],
     ),
-    surface_selection=1002,
 )
 
-body_7_surface_1003 = model.obstacle_mesh(
+obstacle_7 = model.obstacle_mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "unit-plane.obj"),
     transformation=polyfem.transformation(translation=[-1.5, 1, -1.5], rotation=[0, 0, 0], scale=[3.0]),
-    surface_selection=1003,
 )
 
-body_8_surface_1004 = model.obstacle_mesh(
+obstacle_8 = model.obstacle_mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "unit-plane.obj"),
     transformation=polyfem.transformation(
         translation=[-1.5, 1.5, -1],
         rotation=[90, 0, 0],
         scale=[3.0],
     ),
-    surface_selection=1004,
 )
 
-body_9_surface_1005 = model.obstacle_mesh(
+obstacle_9 = model.obstacle_mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "unit-plane.obj"),
     transformation=polyfem.transformation(translation=[-1.5, 1.5, 1], rotation=[90, 0, 0], scale=[3.0]),
-    surface_selection=1005,
 )
 
-body_4_surface_1000.obstacle_displacement(
-    value=['-smooth_abs(t - 0.95, 5) + 0.95', 0, 0],
-)
-body_5_surface_1001.obstacle_displacement(
-    value=['smooth_abs(t - 0.95, 5) - 0.95', 0, 0],
-)
-body_6_surface_1002.obstacle_displacement(
-    value=[0, '-smooth_abs(t - 0.95, 5) + 0.95', 0],
-)
-body_7_surface_1003.obstacle_displacement(
-    value=[0, 'smooth_abs(t - 0.95, 5) - 0.95', 0],
-)
-body_8_surface_1004.obstacle_displacement(
-    value=[0, 0, '-smooth_abs(t - 0.95, 5) + 0.95'],
-)
-body_9_surface_1005.obstacle_displacement(
-    value=[0, 0, 'smooth_abs(t - 0.95, 5) - 0.95'],
-)
+obstacle_4.obstacle_displacement(value=['-smooth_abs(t - 0.95, 5) + 0.95', 0, 0])
+obstacle_5.obstacle_displacement(value=['smooth_abs(t - 0.95, 5) - 0.95', 0, 0])
+obstacle_6.obstacle_displacement(value=[0, '-smooth_abs(t - 0.95, 5) + 0.95', 0])
+obstacle_7.obstacle_displacement(value=[0, 'smooth_abs(t - 0.95, 5) - 0.95', 0])
+obstacle_8.obstacle_displacement(value=[0, 0, '-smooth_abs(t - 0.95, 5) + 0.95'])
+obstacle_9.obstacle_displacement(value=[0, 0, 'smooth_abs(t - 0.95, 5) - 0.95'])
 
 polyfem_config = model.config(
     contact=polyfem.contact(enabled=True, dhat=0.001),
@@ -146,6 +123,7 @@ polyfem_config = model.config(
             save_solve_sequence_debug=False,
             save_time_sequence=True,
         ),
+        directory='results/3D/stress-tests/trash-compactor-shapes',
     ),
     time=polyfem.time(polyfem.object1(tend=2.5, dt=0.01)),
     materials=polyfem.materials(
@@ -157,13 +135,5 @@ polyfem_config = model.config(
 )
 
 
-def config_for_workspace(workspace: Path) -> Any:
-    return config_for_workspace_from(polyfem_config, workspace)
-
-
-def main() -> int:
-    return run_solve(polyfem_config, "contact_3d_stress_tests_trash_compactor_shapes_generated_api")
-
-
 if __name__ == "__main__":
-    raise SystemExit(main())
+    solve(cfg=polyfem_config)

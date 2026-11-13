@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import Any
 
 import polyfem
+from polyfempy.runtime import solve
 
 EXAMPLE_DIR = Path(__file__).resolve().parent
 if str(EXAMPLE_DIR) not in sys.path:
@@ -20,8 +20,6 @@ if str(EXAMPLE_DIR) not in sys.path:
 from _contact_3d_common import (  # noqa: E402
     CONTACT_EXAMPLES_DIR,
     MESHES_DIR,
-    config_for_workspace_from,
-    run_solve,
 )
 
 
@@ -35,7 +33,6 @@ material_2 = polyfem.neo_hookean(E=200000000000.0, nu=0.3, rho=7750)
 body_1 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "simple" / "sphere" / "sphere1K.msh"),
     transformation=polyfem.transformation(scale=[0.04]),
-    volume_selection=1,
     n_refs=1,
 )
 body_1.material(material_1)
@@ -43,15 +40,14 @@ body_1.material(material_1)
 body_2 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "simple" / "cube.msh"),
     transformation=polyfem.transformation(translation=[0.105, 0, 0], dimensions=[0.01, 0.4, 0.4]),
-    volume_selection=2,
     n_refs=0,
 )
 body_2.material(material_2)
-body_2_surface_1 = body_2.surface_all(id=1)
+body_2_surface = body_2.surface_all()
 
 body_1.velocity(polyfem.velocity_item(value=[67, 0, 0]))
 
-body_2_surface_1.dirichlet(value=[0, 0, 0])
+body_2_surface.dirichlet(value=[0, 0, 0])
 
 polyfem_config = model.config(
     contact=polyfem.contact(enabled=True, dhat=6.92820323e-05),
@@ -82,6 +78,7 @@ polyfem_config = model.config(
             save_solve_sequence_debug=False,
             save_time_sequence=True,
         ),
+        directory='results/3D/higher-order/golf-ball-P1',
     ),
     space=polyfem.space(discr_order=1),
     time=polyfem.time(polyfem.object1(tend=0.004, dt=2e-05)),
@@ -89,13 +86,5 @@ polyfem_config = model.config(
 )
 
 
-def config_for_workspace(workspace: Path) -> Any:
-    return config_for_workspace_from(polyfem_config, workspace)
-
-
-def main() -> int:
-    return run_solve(polyfem_config, "contact_3d_higher_order_golf_ball_p1_generated_api")
-
-
 if __name__ == "__main__":
-    raise SystemExit(main())
+    solve(cfg=polyfem_config)

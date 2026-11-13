@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import Any
 
 import polyfem
+from polyfempy.runtime import solve
 
 EXAMPLE_DIR = Path(__file__).resolve().parent
 if str(EXAMPLE_DIR) not in sys.path:
@@ -20,8 +20,6 @@ if str(EXAMPLE_DIR) not in sys.path:
 from _contact_2d_common import (  # noqa: E402
     CONTACT_EXAMPLES_DIR,
     MESHES_DIR,
-    config_for_workspace_from,
-    run_solve,
 )
 
 
@@ -34,42 +32,40 @@ material_1 = polyfem.neo_hookean(E=100000, nu=0.4, rho=1000)
 body_1 = model.mesh(
     mesh=str(MESHES_DIR / "2D" / "simple" / "square.obj"),
     transformation=polyfem.transformation(translation=[0, 0], scale=[0.2]),
-    volume_selection=1,
 )
 body_1.material(material_1)
 
 body_2 = model.mesh(
     mesh=str(MESHES_DIR / "2D" / "simple" / "square.obj"),
     transformation=polyfem.transformation(translation=[0, 0.205], scale=[0.2]),
-    volume_selection=1,
+    same_volume_as=body_1,
 )
 body_2.material(material_1)
 
 body_3 = model.mesh(
     mesh=str(MESHES_DIR / "2D" / "simple" / "square.obj"),
     transformation=polyfem.transformation(translation=[0, 0.41], scale=[0.2]),
-    volume_selection=1,
+    same_volume_as=body_1,
 )
 body_3.material(material_1)
 
 body_4 = model.mesh(
     mesh=str(MESHES_DIR / "2D" / "simple" / "square.obj"),
     transformation=polyfem.transformation(translation=[0, 0.615], scale=[0.2]),
-    volume_selection=1,
+    same_volume_as=body_1,
 )
 body_4.material(material_1)
 
 body_5 = model.mesh(
     mesh=str(MESHES_DIR / "2D" / "simple" / "square.obj"),
     transformation=polyfem.transformation(translation=[0, 0.82], scale=[0.2]),
-    volume_selection=1,
+    same_volume_as=body_1,
 )
 body_5.material(material_1)
 
 model.obstacle_mesh(
     mesh=str(MESHES_DIR / "2D" / "obstacles" / "line.obj"),
     transformation=polyfem.transformation(translation=[0, -0.315]),
-    surface_selection=0,
 )
 
 polyfem_config = model.config(
@@ -100,19 +96,12 @@ polyfem_config = model.config(
             save_solve_sequence_debug=False,
             save_time_sequence=True,
         ),
+        directory='results/2D/unit-tests/5-squares',
     ),
     time=polyfem.time(polyfem.object1(tend=5, dt=0.025)),
     rhs=[0, 9.81],
 )
 
 
-def config_for_workspace(workspace: Path) -> Any:
-    return config_for_workspace_from(polyfem_config, workspace)
-
-
-def main() -> int:
-    return run_solve(polyfem_config, "contact_2d_unit_tests_5_squares_generated_api")
-
-
 if __name__ == "__main__":
-    raise SystemExit(main())
+    solve(cfg=polyfem_config)

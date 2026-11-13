@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import Any
 
 import polyfem
+from polyfempy.runtime import solve
 
 EXAMPLE_DIR = Path(__file__).resolve().parent
 if str(EXAMPLE_DIR) not in sys.path:
@@ -20,8 +20,6 @@ if str(EXAMPLE_DIR) not in sys.path:
 from _contact_2d_common import (  # noqa: E402
     CONTACT_EXAMPLES_DIR,
     MESHES_DIR,
-    config_for_workspace_from,
-    run_solve,
 )
 
 
@@ -31,7 +29,7 @@ model = polyfem.model()
 
 material_1 = polyfem.neo_hookean(E=25500000.0, nu=0.48, rho=1700)
 
-body_1 = model.mesh(mesh=str(MESHES_DIR / "2D" / "simple" / "square.obj"), volume_selection=1)
+body_1 = model.mesh(mesh=str(MESHES_DIR / "2D" / "simple" / "square.obj"))
 body_1.material(material_1)
 
 body_1.velocity(polyfem.velocity_item(value=['deg2rad(180) * y', '-deg2rad(180) * x']))
@@ -64,19 +62,12 @@ polyfem_config = model.config(
             save_solve_sequence_debug=False,
             save_time_sequence=True,
         ),
+        directory='results/2D/initial_angular_velocity',
     ),
     time=polyfem.time(polyfem.object1(dt=0.04, tend=5)),
     rhs=[0, 0],
 )
 
 
-def config_for_workspace(workspace: Path) -> Any:
-    return config_for_workspace_from(polyfem_config, workspace)
-
-
-def main() -> int:
-    return run_solve(polyfem_config, "contact_2d_initial_angular_velocity_generated_api")
-
-
 if __name__ == "__main__":
-    raise SystemExit(main())
+    solve(cfg=polyfem_config)

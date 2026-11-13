@@ -8,9 +8,9 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import Any
 
 import polyfem
+from polyfempy.runtime import solve
 
 EXAMPLE_DIR = Path(__file__).resolve().parent
 if str(EXAMPLE_DIR) not in sys.path:
@@ -19,8 +19,6 @@ if str(EXAMPLE_DIR) not in sys.path:
 from _contact_2d_common import (  # noqa: E402
     CONTACT_EXAMPLES_DIR,
     MESHES_DIR,
-    config_for_workspace_from,
-    run_solve,
 )
 
 
@@ -43,7 +41,7 @@ left_roller = model.mesh(
     transformation=polyfem.transformation(translation=[-0.5, -1], scale=0.8),
 )
 left_roller.material(steel)
-left_roller.surface_all(id=1).dirichlet(
+left_roller.surface_all().dirichlet(
     value=[
         "rotate_2D_x(x + 0.5, y + 1, -t * pi / 2) - (x + 0.5)",
         "rotate_2D_y(x + 0.5, y + 1, -t * pi / 2) - (y + 1)",
@@ -56,7 +54,7 @@ right_roller = model.mesh(
     transformation=polyfem.transformation(translation=[0.5, -1], scale=0.8),
 )
 right_roller.material(steel)
-right_roller.surface_all(id=2).dirichlet(
+right_roller.surface_all().dirichlet(
     value=[
         "rotate_2D_x(x - 0.5, y + 1, t * pi / 2) - (x - 0.5)",
         "rotate_2D_y(x - 0.5, y + 1, t * pi / 2) - (y + 1)",
@@ -69,7 +67,7 @@ ground = model.mesh(
     transformation=polyfem.transformation(translation=[0, -4.01], scale=[8, 0.02]),
 )
 ground.material(steel)
-ground.surface_all(id=3).dirichlet(value=[0, 0])
+ground.surface_all().dirichlet(value=[0, 0])
 
 solver = polyfem.solver(
     linear=polyfem.linear(solver="Eigen::PardisoLDLT"),
@@ -83,6 +81,7 @@ solver = polyfem.solver(
 )
 
 output = polyfem.output(
+    directory="results/2D/friction/circle-rollers",
     json="sim.json",
     paraview=polyfem.output_paraview(
         file_name="sim.pvd",
@@ -116,13 +115,5 @@ polyfem_config = model.config(
 )
 
 
-def config_for_workspace(workspace: Path) -> Any:
-    return config_for_workspace_from(polyfem_config, workspace)
-
-
-def main() -> int:
-    return run_solve(polyfem_config, "contact_2d_friction_circle_rollers_generated_api")
-
-
 if __name__ == "__main__":
-    raise SystemExit(main())
+    solve(cfg=polyfem_config)

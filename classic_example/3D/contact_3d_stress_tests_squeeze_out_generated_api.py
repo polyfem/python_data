@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import Any
 
 import polyfem
+from polyfempy.runtime import solve
 
 EXAMPLE_DIR = Path(__file__).resolve().parent
 if str(EXAMPLE_DIR) not in sys.path:
@@ -20,8 +20,6 @@ if str(EXAMPLE_DIR) not in sys.path:
 from _contact_3d_common import (  # noqa: E402
     CONTACT_EXAMPLES_DIR,
     MESHES_DIR,
-    config_for_workspace_from,
-    run_solve,
 )
 
 
@@ -32,7 +30,6 @@ model = polyfem.model()
 body_1 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "creatures" / "alien.msh"),
     transformation=polyfem.transformation(translation=[0, -1.05, 0], rotation=[0, 0, 0], scale=[0.45]),
-    volume_selection=1,
 )
 
 body_2 = model.mesh(
@@ -42,7 +39,6 @@ body_2 = model.mesh(
         rotation=[-90, 0, 0],
         scale=[0.22],
     ),
-    volume_selection=2,
 )
 
 body_3 = model.mesh(
@@ -52,19 +48,16 @@ body_3 = model.mesh(
         rotation=[-90, 0, 0],
         scale=[0.012],
     ),
-    volume_selection=3,
 )
 
 body_4 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "creatures" / "octocat.msh"),
     transformation=polyfem.transformation(translation=[0, 1.9, 0], rotation=[-90, 0, 0], scale=[0.01]),
-    volume_selection=4,
 )
 
-body_5_surface_1000 = model.obstacle_mesh(
+obstacle_5 = model.obstacle_mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "unit-plane.obj"),
     transformation=polyfem.transformation(translation=[-1, 2.25, -1], rotation=[0, 0, 0], scale=[2.0]),
-    surface_selection=1000,
 )
 
 model.obstacle_mesh(
@@ -72,7 +65,7 @@ model.obstacle_mesh(
     transformation=polyfem.transformation(translation=[0, -2, 0], rotation=[0, 0, -90], scale=[1.15]),
 )
 
-body_5_surface_1000.obstacle_displacement(value=[0, 'max(-0.3 * t, -3.79)', 0])
+obstacle_5.obstacle_displacement(value=[0, 'max(-0.3 * t, -3.79)', 0])
 
 polyfem_config = model.config(
     contact=polyfem.contact(enabled=True, dhat=0.001),
@@ -102,6 +95,7 @@ polyfem_config = model.config(
             save_solve_sequence_debug=False,
             save_time_sequence=True,
         ),
+        directory='results/3D/stress-tests/squeeze-out',
     ),
     time=polyfem.time(polyfem.object1(tend=15, dt=0.01)),
     materials=polyfem.materials(
@@ -113,13 +107,5 @@ polyfem_config = model.config(
 )
 
 
-def config_for_workspace(workspace: Path) -> Any:
-    return config_for_workspace_from(polyfem_config, workspace)
-
-
-def main() -> int:
-    return run_solve(polyfem_config, "contact_3d_stress_tests_squeeze_out_generated_api")
-
-
 if __name__ == "__main__":
-    raise SystemExit(main())
+    solve(cfg=polyfem_config)

@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import Any
 
 import polyfem
+from polyfempy.runtime import solve
 
 EXAMPLE_DIR = Path(__file__).resolve().parent
 if str(EXAMPLE_DIR) not in sys.path:
@@ -20,8 +20,6 @@ if str(EXAMPLE_DIR) not in sys.path:
 from _contact_3d_common import (  # noqa: E402
     CONTACT_EXAMPLES_DIR,
     MESHES_DIR,
-    config_for_workspace_from,
-    run_solve,
 )
 
 
@@ -41,7 +39,6 @@ body_1 = model.mesh(
         rotation_mode='zyx',
         scale=[1.0],
     ),
-    volume_selection=1,
 )
 body_1.material(material_1)
 
@@ -53,19 +50,17 @@ body_2 = model.mesh(
         rotation_mode='zyx',
         scale=[1.0],
     ),
-    volume_selection=2,
 )
 body_2.material(material_2)
 
 body_3 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "simple" / "cube.msh"),
     transformation=polyfem.transformation(translation=[0, -0.56, 0], scale=[2, 0.01, 2]),
-    volume_selection=3,
 )
 body_3.material(material_3)
-body_3_surface_1 = body_3.surface_all(id=1)
+body_3_surface = body_3.surface_all()
 
-body_3_surface_1.dirichlet(value=[0, 0, 0])
+body_3_surface.dirichlet(value=[0, 0, 0])
 
 polyfem_config = model.config(
     contact=polyfem.contact(enabled=True, dhat=0.001, friction_coefficient=0.1),
@@ -95,19 +90,12 @@ polyfem_config = model.config(
             save_solve_sequence_debug=False,
             save_time_sequence=True,
         ),
+        directory='results/3D/large-ratios/large-stiffness-ratio',
     ),
     time=polyfem.time(polyfem.object3(tend=3, time_steps=120)),
     rhs=[0, 9.81, 0],
 )
 
 
-def config_for_workspace(workspace: Path) -> Any:
-    return config_for_workspace_from(polyfem_config, workspace)
-
-
-def main() -> int:
-    return run_solve(polyfem_config, "contact_3d_large_ratios_large_stiffness_ratio_generated_api")
-
-
 if __name__ == "__main__":
-    raise SystemExit(main())
+    solve(cfg=polyfem_config)

@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import Any
 
 import polyfem
+from polyfempy.runtime import solve
 
 EXAMPLE_DIR = Path(__file__).resolve().parent
 if str(EXAMPLE_DIR) not in sys.path:
@@ -20,8 +20,6 @@ if str(EXAMPLE_DIR) not in sys.path:
 from _contact_3d_common import (  # noqa: E402
     CONTACT_EXAMPLES_DIR,
     MESHES_DIR,
-    config_for_workspace_from,
-    run_solve,
 )
 
 
@@ -34,62 +32,56 @@ material_1 = polyfem.neo_hookean(E=10000, nu=0.4, rho=1000)
 body_1 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "simple" / "sphere" / "sphere5K.msh"),
     transformation=polyfem.transformation(translation=[0, 0.5, 0], scale=[2.0]),
-    volume_selection=1,
 )
 body_1.material(material_1)
 
-body_2_surface_1000 = model.obstacle_mesh(
+obstacle_2 = model.obstacle_mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "cylinder.obj"),
     transformation=polyfem.transformation(translation=[0, -1, -0.5], scale=[4.0]),
-    surface_selection=1000,
 )
 
-body_3_surface_1001 = model.obstacle_mesh(
+obstacle_3 = model.obstacle_mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "cylinder.obj"),
     transformation=polyfem.transformation(translation=[0, -1, 0.5], scale=[4.0]),
-    surface_selection=1001,
 )
 
-body_4_surface_1002 = model.obstacle_mesh(
+obstacle_4 = model.obstacle_mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "cylinder.obj"),
     transformation=polyfem.transformation(translation=[-0.5, -2, 0], rotation=[0, 90, 0], scale=[4.0]),
-    surface_selection=1002,
 )
 
-body_5_surface_1003 = model.obstacle_mesh(
+obstacle_5 = model.obstacle_mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "cylinder.obj"),
     transformation=polyfem.transformation(translation=[0.5, -2, 0], rotation=[0, 90, 0], scale=[4.0]),
-    surface_selection=1003,
 )
 
 model.obstacle_mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "plane.obj"),
     transformation=polyfem.transformation(translation=[0, -5, 0], dimensions=[8, 0, 8]),
-    surface_selection=0,
 )
 
-body_2_surface_1000.obstacle_displacement(
+obstacle_2.obstacle_displacement(
     value=[
         0,
         'rotate_2D_x(y + 1, z + 0.5, t * pi / 2) - (y + 1)',
         'rotate_2D_y(y + 1, z + 0.5, t * pi / 2) - (z + 0.5)',
     ],
 )
-body_3_surface_1001.obstacle_displacement(
+obstacle_3.obstacle_displacement(
     value=[
         0,
         'rotate_2D_x(y + 1, z - 0.5, -t * pi / 2) - (y + 1)',
         'rotate_2D_y(y + 1, z - 0.5, -t * pi / 2) - (z - 0.5)',
     ],
 )
-body_4_surface_1002.obstacle_displacement(
+obstacle_4.obstacle_displacement(
     value=[
         'rotate_2D_x(x + 0.5, y + 2, -t * pi / 2) - (x + 0.5)',
         'rotate_2D_y(x + 0.5, y + 2, -t * pi / 2) - (y + 2)',
         0,
     ],
 )
-body_5_surface_1003.obstacle_displacement(
+obstacle_5.obstacle_displacement(
     value=[
         'rotate_2D_x(x - 0.5, y + 2, t * pi / 2) - (x - 0.5)',
         'rotate_2D_y(x - 0.5, y + 2, t * pi / 2) - (y + 2)',
@@ -126,19 +118,12 @@ polyfem_config = model.config(
             save_solve_sequence_debug=False,
             save_time_sequence=True,
         ),
+        directory='results/3D/friction/ball-rollers',
     ),
     time=polyfem.time(polyfem.object1(tend=10, dt=0.01)),
     rhs=[0, 9.81, 0],
 )
 
 
-def config_for_workspace(workspace: Path) -> Any:
-    return config_for_workspace_from(polyfem_config, workspace)
-
-
-def main() -> int:
-    return run_solve(polyfem_config, "contact_3d_friction_ball_rollers_generated_api")
-
-
 if __name__ == "__main__":
-    raise SystemExit(main())
+    solve(cfg=polyfem_config)

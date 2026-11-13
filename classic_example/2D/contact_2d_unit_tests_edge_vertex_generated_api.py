@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import Any
 
 import polyfem
+from polyfempy.runtime import solve
 
 EXAMPLE_DIR = Path(__file__).resolve().parent
 if str(EXAMPLE_DIR) not in sys.path:
@@ -20,8 +20,6 @@ if str(EXAMPLE_DIR) not in sys.path:
 from _contact_2d_common import (  # noqa: E402
     CONTACT_EXAMPLES_DIR,
     MESHES_DIR,
-    config_for_workspace_from,
-    run_solve,
 )
 
 
@@ -35,19 +33,17 @@ material_2 = polyfem.neo_hookean(E=100000, nu=0.4, rho=1000)
 body_1 = model.mesh(
     mesh=str(MESHES_DIR / "2D" / "simple" / "triangle" / "equilateral.obj"),
     transformation=polyfem.transformation(translation=[0, 0.5, 0]),
-    volume_selection=1,
 )
 body_1.material(material_1)
 
 body_2 = model.mesh(
     mesh=str(MESHES_DIR / "2D" / "simple" / "triangle" / "equilateral.obj"),
     transformation=polyfem.transformation(translation=[0, -0.5, 0]),
-    volume_selection=2,
 )
 body_2.material(material_2)
-body_2_surface_1 = body_2.surface_all(id=1)
+body_2_surface = body_2.surface_all()
 
-body_2_surface_1.dirichlet(value=[0, 0])
+body_2_surface.dirichlet(value=[0, 0])
 
 polyfem_config = model.config(
     contact=polyfem.contact(enabled=True, dhat=0.001),
@@ -77,19 +73,12 @@ polyfem_config = model.config(
             save_solve_sequence_debug=False,
             save_time_sequence=True,
         ),
+        directory='results/2D/unit-tests/edge-vertex',
     ),
     time=polyfem.time(polyfem.object1(dt=0.025, tend=5)),
     rhs=[0, 9.81],
 )
 
 
-def config_for_workspace(workspace: Path) -> Any:
-    return config_for_workspace_from(polyfem_config, workspace)
-
-
-def main() -> int:
-    return run_solve(polyfem_config, "contact_2d_unit_tests_edge_vertex_generated_api")
-
-
 if __name__ == "__main__":
-    raise SystemExit(main())
+    solve(cfg=polyfem_config)

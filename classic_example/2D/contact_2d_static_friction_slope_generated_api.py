@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import Any
 
 import polyfem
+from polyfempy.runtime import solve
 
 EXAMPLE_DIR = Path(__file__).resolve().parent
 if str(EXAMPLE_DIR) not in sys.path:
@@ -20,8 +20,6 @@ if str(EXAMPLE_DIR) not in sys.path:
 from _contact_2d_common import (  # noqa: E402
     CONTACT_EXAMPLES_DIR,
     MESHES_DIR,
-    config_for_workspace_from,
-    run_solve,
 )
 
 
@@ -33,14 +31,14 @@ body_1 = model.geometry_mesh(
     mesh=str(MESHES_DIR / "2D" / "simple" / "square.obj"),
     transformation=polyfem.transformation(translation=[0, 0], rotation=[-30.0], scale=[5, 0.02]),
 )
-body_1_surface_1 = body_1.surface_all(id=1)
+body_1_surface = body_1.surface_all()
 
 model.geometry_mesh(
     mesh=str(MESHES_DIR / "2D" / "simple" / "square1K.msh"),
     transformation=polyfem.transformation(translation=[0.26, 0.4503], rotation=[-30.0], scale=[1.0]),
 )
 
-body_1_surface_1.dirichlet(value=[0, 0])
+body_1_surface.dirichlet(value=[0, 0])
 
 polyfem_config = model.config(
     contact=polyfem.contact(enabled=True, dhat=0.001, friction_coefficient=0.6),
@@ -87,6 +85,7 @@ polyfem_config = model.config(
             save_time_sequence=False,
             save_nl_solve_sequence=False,
         ),
+        directory='results/2D/static/friction-slope',
     ),
     materials=polyfem.materials(
         items=[
@@ -97,13 +96,5 @@ polyfem_config = model.config(
 )
 
 
-def config_for_workspace(workspace: Path) -> Any:
-    return config_for_workspace_from(polyfem_config, workspace)
-
-
-def main() -> int:
-    return run_solve(polyfem_config, "contact_2d_static_friction_slope_generated_api")
-
-
 if __name__ == "__main__":
-    raise SystemExit(main())
+    solve(cfg=polyfem_config)

@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import Any
 
 import polyfem
+from polyfempy.runtime import solve
 
 EXAMPLE_DIR = Path(__file__).resolve().parent
 if str(EXAMPLE_DIR) not in sys.path:
@@ -20,8 +20,6 @@ if str(EXAMPLE_DIR) not in sys.path:
 from _contact_2d_common import (  # noqa: E402
     CONTACT_EXAMPLES_DIR,
     MESHES_DIR,
-    config_for_workspace_from,
-    run_solve,
 )
 
 
@@ -36,7 +34,6 @@ material_3 = polyfem.neo_hookean(E=200000000000.0, nu=0.3, rho=7750)
 body_1 = model.mesh(
     mesh=str(MESHES_DIR / "2D" / "simple" / "bar" / "bar40.obj"),
     transformation=polyfem.transformation(translation=[0, 0], rotation=[60.0], dimensions=[1, 0.013]),
-    volume_selection=1,
 )
 body_1.material(material_1)
 
@@ -47,7 +44,7 @@ body_2 = model.mesh(
         rotation=[-60.0],
         dimensions=[1, 0.013],
     ),
-    volume_selection=1,
+    same_volume_as=body_1,
 )
 body_2.material(material_1)
 
@@ -58,7 +55,7 @@ body_3 = model.mesh(
         rotation=[60.0],
         dimensions=[1, 0.013],
     ),
-    volume_selection=1,
+    same_volume_as=body_1,
 )
 body_3.material(material_1)
 
@@ -69,7 +66,7 @@ body_4 = model.mesh(
         rotation=[-60.0],
         dimensions=[1, 0.013],
     ),
-    volume_selection=1,
+    same_volume_as=body_1,
 )
 body_4.material(material_1)
 
@@ -80,7 +77,7 @@ body_5 = model.mesh(
         rotation=[0.0],
         dimensions=[1.1, 0.013],
     ),
-    volume_selection=1,
+    same_volume_as=body_1,
 )
 body_5.material(material_1)
 
@@ -91,7 +88,7 @@ body_6 = model.mesh(
         rotation=[60.0],
         dimensions=[1, 0.013],
     ),
-    volume_selection=1,
+    same_volume_as=body_1,
 )
 body_6.material(material_1)
 
@@ -102,7 +99,7 @@ body_7 = model.mesh(
         rotation=[-60.0],
         dimensions=[1, 0.013],
     ),
-    volume_selection=1,
+    same_volume_as=body_1,
 )
 body_7.material(material_1)
 
@@ -110,7 +107,6 @@ body_8 = model.mesh(
     mesh=str(MESHES_DIR / "2D" / "simple" / "square.obj"),
     enabled=True,
     transformation=polyfem.transformation(translation=[0.2, 6], rotation=[0.0], scale=[0.4]),
-    volume_selection=2,
 )
 body_8.material(material_2)
 
@@ -118,19 +114,18 @@ body_9 = model.mesh(
     mesh=str(MESHES_DIR / "2D" / "simple" / "square.obj"),
     enabled=True,
     transformation=polyfem.transformation(translation=[0.5, 9], rotation=[0.0], scale=[0.4]),
-    volume_selection=2,
+    same_volume_as=body_8,
 )
 body_9.material(material_2)
 
 body_10 = model.mesh(
     mesh=str(MESHES_DIR / "2D" / "simple" / "square.obj"),
     transformation=polyfem.transformation(translation=[0.7725, -0.4515], dimensions=[4, 0.013]),
-    volume_selection=3,
 )
 body_10.material(material_3)
-body_10_surface_1 = body_10.surface_all(id=1)
+body_10_surface = body_10.surface_all()
 
-body_10_surface_1.dirichlet(value=[0, 0])
+body_10_surface.dirichlet(value=[0, 0])
 
 polyfem_config = model.config(
     contact=polyfem.contact(enabled=True, dhat=0.0001, epsv=1e-05, friction_coefficient=0.9),
@@ -161,19 +156,12 @@ polyfem_config = model.config(
             save_solve_sequence_debug=False,
             save_time_sequence=True,
         ),
+        directory='results/2D/friction/card-house',
     ),
     time=polyfem.time(polyfem.object1(tend=5, dt=0.025)),
     rhs=[0, 9.81],
 )
 
 
-def config_for_workspace(workspace: Path) -> Any:
-    return config_for_workspace_from(polyfem_config, workspace)
-
-
-def main() -> int:
-    return run_solve(polyfem_config, "contact_2d_friction_card_house_generated_api")
-
-
 if __name__ == "__main__":
-    raise SystemExit(main())
+    solve(cfg=polyfem_config)

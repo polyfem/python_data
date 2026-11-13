@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import Any
 
 import polyfem
+from polyfempy.runtime import solve
 
 EXAMPLE_DIR = Path(__file__).resolve().parent
 if str(EXAMPLE_DIR) not in sys.path:
@@ -20,8 +20,6 @@ if str(EXAMPLE_DIR) not in sys.path:
 from _contact_3d_common import (  # noqa: E402
     CONTACT_EXAMPLES_DIR,
     MESHES_DIR,
-    config_for_workspace_from,
-    run_solve,
 )
 
 
@@ -34,11 +32,10 @@ material_1 = polyfem.neo_hookean(E=20000, nu=0.4, rho=1000)
 body_1 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "simple" / "mat" / "mat40x40.msh"),
     transformation=polyfem.transformation(translation=[0, 0, 0], rotation=[90, 0, 0]),
-    volume_selection=1,
 )
 body_1.material(material_1)
-body_1_surface_1 = body_1.surface_axis(id=1, axis=1, position=0.5)
-body_1_surface_3 = body_1.surface_axis(id=3, axis=-1, position=-0.5)
+body_1_surface_1 = body_1.surface_axis(axis=1, position=0.5)
+body_1_surface_2 = body_1.surface_axis(axis=-1, position=-0.5)
 
 body_1_surface_1.dirichlet(
     value=[
@@ -47,7 +44,7 @@ body_1_surface_1.dirichlet(
         'y*sin((-0.4*pi)*t)+z*cos((-0.4*pi)*t)-z',
     ],
 )
-body_1_surface_3.dirichlet(
+body_1_surface_2.dirichlet(
     value=[0, 'y*cos((0.4*pi)*t)-z*sin((0.4*pi)*t)-y', 'y*sin((0.4*pi)*t)+z*cos((0.4*pi)*t)-z'],
 )
 
@@ -80,19 +77,12 @@ polyfem_config = model.config(
             save_solve_sequence_debug=False,
             save_time_sequence=True,
         ),
+        directory='results/3D/stress-tests/mat-twist-Linf',
     ),
     time=polyfem.time(polyfem.object1(tend=100, dt=0.04)),
     rhs=[0, 0, 0],
 )
 
 
-def config_for_workspace(workspace: Path) -> Any:
-    return config_for_workspace_from(polyfem_config, workspace)
-
-
-def main() -> int:
-    return run_solve(polyfem_config, "contact_3d_stress_tests_mat_twist_linf_generated_api")
-
-
 if __name__ == "__main__":
-    raise SystemExit(main())
+    solve(cfg=polyfem_config)

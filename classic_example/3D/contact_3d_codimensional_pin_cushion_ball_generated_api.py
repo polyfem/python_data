@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import Any
 
 import polyfem
+from polyfempy.runtime import solve
 
 EXAMPLE_DIR = Path(__file__).resolve().parent
 if str(EXAMPLE_DIR) not in sys.path:
@@ -20,8 +20,6 @@ if str(EXAMPLE_DIR) not in sys.path:
 from _contact_3d_common import (  # noqa: E402
     CONTACT_EXAMPLES_DIR,
     MESHES_DIR,
-    config_for_workspace_from,
-    run_solve,
 )
 
 
@@ -34,26 +32,23 @@ material_1 = polyfem.neo_hookean(E=100000, nu=0.4, rho=1000)
 body_1 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "simple" / "sphere" / "sphere5K.msh"),
     transformation=polyfem.transformation(scale=[4.0], translation=[10, 4, 10]),
-    volume_selection=1,
-    surface_selection=0,
 )
+body_1.surface_all()
 body_1.material(material_1)
 
-body_2_surface_1 = model.obstacle_mesh_array(
+model.obstacle_mesh_array(
     array=polyfem.array(offset=1, size=[21, 1, 21]),
     mesh=str(MESHES_DIR / "2D" / "codimensional" / "edge.obj"),
     transformation=polyfem.mesh_array_transformation(rotation=[0, 0, 90]),
-    surface_selection=1,
-)
+).surface_all()
 
-body_3_surface_2 = model.obstacle_mesh_array(
+obstacle_3 = model.obstacle_mesh_array(
     array=polyfem.array(offset=1, size=[21, 1, 21]),
     mesh=str(MESHES_DIR / "2D" / "codimensional" / "edge.obj"),
     transformation=polyfem.mesh_array_transformation(rotation=[0, 0, 90], translation=[0, 10, 0]),
-    surface_selection=2,
 )
 
-body_3_surface_2.dirichlet(value=[0, 'max(-8.9 / 7 * t, -8.9)', 0])
+obstacle_3.dirichlet(value=[0, 'max(-8.9 / 7 * t, -8.9)', 0])
 
 polyfem_config = model.config(
     contact=polyfem.contact(enabled=True, dhat=0.001),
@@ -83,19 +78,12 @@ polyfem_config = model.config(
             save_solve_sequence_debug=False,
             save_time_sequence=True,
         ),
+        directory='results/3D/codimensional/pin-cushion-ball',
     ),
     time=polyfem.time(polyfem.object1(dt=0.04, tend=8)),
     rhs=[0, 9.81, 0],
 )
 
 
-def config_for_workspace(workspace: Path) -> Any:
-    return config_for_workspace_from(polyfem_config, workspace)
-
-
-def main() -> int:
-    return run_solve(polyfem_config, "contact_3d_codimensional_pin_cushion_ball_generated_api")
-
-
 if __name__ == "__main__":
-    raise SystemExit(main())
+    solve(cfg=polyfem_config)

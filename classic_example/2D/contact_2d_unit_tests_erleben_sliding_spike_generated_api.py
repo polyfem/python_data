@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import Any
 
 import polyfem
+from polyfempy.runtime import solve
 
 EXAMPLE_DIR = Path(__file__).resolve().parent
 if str(EXAMPLE_DIR) not in sys.path:
@@ -20,8 +20,6 @@ if str(EXAMPLE_DIR) not in sys.path:
 from _contact_2d_common import (  # noqa: E402
     CONTACT_EXAMPLES_DIR,
     MESHES_DIR,
-    config_for_workspace_from,
-    run_solve,
 )
 
 
@@ -34,15 +32,13 @@ material_1 = polyfem.neo_hookean(E=200000000000.0, nu=0.3, rho=7750)
 body_1 = model.mesh(
     mesh=str(MESHES_DIR / "2D" / "simple" / "erleben" / "spike.obj"),
     transformation=polyfem.transformation(rotation=[180.0], translation=[-4.9, 2.0001]),
-    volume_selection=1,
 )
 body_1.material(material_1)
-body_1_surface_1 = body_1.surface_axis(axis=2, id=1, position=2)
+body_1_surface_1 = body_1.surface_axis(axis=2, position=2)
 
 model.obstacle_mesh(
     mesh=str(MESHES_DIR / "2D" / "obstacles" / "line.obj"),
     transformation=polyfem.transformation(translation=[0, -1]),
-    surface_selection=0,
 )
 
 body_1_surface_1.dirichlet(value=['10*t', 0])
@@ -75,19 +71,12 @@ polyfem_config = model.config(
             save_solve_sequence_debug=False,
             save_time_sequence=True,
         ),
+        directory='results/2D/unit-tests/erleben/sliding-spike',
     ),
     time=polyfem.time(polyfem.object1(dt=0.025, tend=1)),
     rhs=[0, 9.81],
 )
 
 
-def config_for_workspace(workspace: Path) -> Any:
-    return config_for_workspace_from(polyfem_config, workspace)
-
-
-def main() -> int:
-    return run_solve(polyfem_config, "contact_2d_unit_tests_erleben_sliding_spike_generated_api")
-
-
 if __name__ == "__main__":
-    raise SystemExit(main())
+    solve(cfg=polyfem_config)

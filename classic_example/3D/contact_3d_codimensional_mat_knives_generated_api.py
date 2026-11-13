@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import Any
 
 import polyfem
+from polyfempy.runtime import solve
 
 EXAMPLE_DIR = Path(__file__).resolve().parent
 if str(EXAMPLE_DIR) not in sys.path:
@@ -20,8 +20,6 @@ if str(EXAMPLE_DIR) not in sys.path:
 from _contact_3d_common import (  # noqa: E402
     CONTACT_EXAMPLES_DIR,
     MESHES_DIR,
-    config_for_workspace_from,
-    run_solve,
 )
 
 
@@ -38,32 +36,27 @@ body_1 = model.mesh(
         rotation=[0, 0, 0.05],
         scale=[1.2],
     ),
-    volume_selection=1,
 )
 body_1.material(material_1)
 
 model.obstacle_mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "triangle.obj"),
     transformation=polyfem.transformation(translation=[0.2, -0.1, -0.7], rotation=[0, 0, 90]),
-    surface_selection=0,
 )
 
 model.obstacle_mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "triangle.obj"),
     transformation=polyfem.transformation(translation=[0.4, -0.1, -0.7], rotation=[0, 0, 90]),
-    surface_selection=0,
 )
 
 model.obstacle_mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "triangle.obj"),
     transformation=polyfem.transformation(translation=[0.6, -0.1, -0.7], rotation=[0, 0, 90]),
-    surface_selection=0,
 )
 
 model.obstacle_mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "triangle.obj"),
     transformation=polyfem.transformation(translation=[0.8, -0.1, -0.7], rotation=[0, 0, 90]),
-    surface_selection=0,
 )
 
 model.obstacle_mesh(
@@ -73,7 +66,6 @@ model.obstacle_mesh(
         rotation=[0, 180, 90],
         rotation_mode='zyx',
     ),
-    surface_selection=0,
 )
 
 model.obstacle_mesh(
@@ -83,7 +75,6 @@ model.obstacle_mesh(
         rotation=[0, 180, 90],
         rotation_mode='zyx',
     ),
-    surface_selection=0,
 )
 
 model.obstacle_mesh(
@@ -93,7 +84,6 @@ model.obstacle_mesh(
         rotation=[0, 180, 90],
         rotation_mode='zyx',
     ),
-    surface_selection=0,
 )
 
 model.obstacle_mesh(
@@ -103,7 +93,6 @@ model.obstacle_mesh(
         rotation=[0, 180, 90],
         rotation_mode='zyx',
     ),
-    surface_selection=0,
 )
 
 model.obstacle_mesh(
@@ -113,7 +102,6 @@ model.obstacle_mesh(
         rotation=[0, 180, 90],
         rotation_mode='zyx',
     ),
-    surface_selection=0,
 )
 
 polyfem_config = model.config(
@@ -144,19 +132,12 @@ polyfem_config = model.config(
             save_solve_sequence_debug=False,
             save_time_sequence=True,
         ),
+        directory='results/3D/codimensional/mat-knives',
     ),
     time=polyfem.time(polyfem.object1(tend=6, dt=0.04)),
     rhs=[0, 9.81, 0],
 )
 
 
-def config_for_workspace(workspace: Path) -> Any:
-    return config_for_workspace_from(polyfem_config, workspace)
-
-
-def main() -> int:
-    return run_solve(polyfem_config, "contact_3d_codimensional_mat_knives_generated_api")
-
-
 if __name__ == "__main__":
-    raise SystemExit(main())
+    solve(cfg=polyfem_config)

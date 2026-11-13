@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import Any
 
 import polyfem
+from polyfempy.runtime import solve
 
 EXAMPLE_DIR = Path(__file__).resolve().parent
 if str(EXAMPLE_DIR) not in sys.path:
@@ -20,8 +20,6 @@ if str(EXAMPLE_DIR) not in sys.path:
 from _contact_3d_common import (  # noqa: E402
     CONTACT_EXAMPLES_DIR,
     MESHES_DIR,
-    config_for_workspace_from,
-    run_solve,
 )
 
 
@@ -36,9 +34,8 @@ body_1 = model.mesh(
         scale=[0.008394050297],
         translation=[0.4547526249, 0.5227239301, -0.02286748313],
     ),
-    volume_selection=1,
 )
-body_1_surface_1 = body_1.surface_box(box=[[0.97, 0, 0], [1, 1, 1]], id=1, relative=True)
+body_1_surface_1 = body_1.surface_box(box=[[0.97, 0, 0], [1, 1, 1]], relative=True)
 
 model.obstacle_mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "funnel.obj"),
@@ -47,7 +44,6 @@ model.obstacle_mesh(
         scale=[1.5],
         translation=[1.76, 0.86, 0.42],
     ),
-    surface_selection=0,
 )
 
 body_1_surface_1.dirichlet(
@@ -91,6 +87,7 @@ polyfem_config = model.config(
             save_solve_sequence_debug=False,
             save_time_sequence=True,
         ),
+        directory='results/3D/stress-tests/dolphin-funnel-Linf',
     ),
     materials=polyfem.materials(
         items=[
@@ -102,13 +99,5 @@ polyfem_config = model.config(
 )
 
 
-def config_for_workspace(workspace: Path) -> Any:
-    return config_for_workspace_from(polyfem_config, workspace)
-
-
-def main() -> int:
-    return run_solve(polyfem_config, "contact_3d_stress_tests_dolphin_funnel_linf_generated_api")
-
-
 if __name__ == "__main__":
-    raise SystemExit(main())
+    solve(cfg=polyfem_config)

@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import Any
 
 import polyfem
+from polyfempy.runtime import solve
 
 EXAMPLE_DIR = Path(__file__).resolve().parent
 if str(EXAMPLE_DIR) not in sys.path:
@@ -20,8 +20,6 @@ if str(EXAMPLE_DIR) not in sys.path:
 from _contact_3d_common import (  # noqa: E402
     CONTACT_EXAMPLES_DIR,
     MESHES_DIR,
-    config_for_workspace_from,
-    run_solve,
 )
 
 
@@ -34,14 +32,12 @@ material_1 = polyfem.neo_hookean(E=100000, nu=0.4, rho=1000)
 body_1 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "simple" / "tet" / "tet-pyramid.msh"),
     transformation=polyfem.transformation(translation=[0, 0.5, 0]),
-    volume_selection=1,
 )
 body_1.material(material_1)
 
 model.obstacle_mesh(
     mesh=str(MESHES_DIR / "3D" / "simple" / "tet" / "tet-pyramid.msh"),
     transformation=polyfem.transformation(translation=[0, -0.5, 0]),
-    surface_selection=0,
 )
 
 polyfem_config = model.config(
@@ -72,19 +68,12 @@ polyfem_config = model.config(
             save_solve_sequence_debug=False,
             save_time_sequence=True,
         ),
+        directory='results/3D/unit-tests/face-vertex',
     ),
     time=polyfem.time(polyfem.object3(tend=5, time_steps=200)),
     rhs=[0, 9.81, 0],
 )
 
 
-def config_for_workspace(workspace: Path) -> Any:
-    return config_for_workspace_from(polyfem_config, workspace)
-
-
-def main() -> int:
-    return run_solve(polyfem_config, "contact_3d_unit_tests_face_vertex_generated_api")
-
-
 if __name__ == "__main__":
-    raise SystemExit(main())
+    solve(cfg=polyfem_config)

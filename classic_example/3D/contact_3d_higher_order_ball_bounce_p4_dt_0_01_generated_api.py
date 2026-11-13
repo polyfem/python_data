@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import Any
 
 import polyfem
+from polyfempy.runtime import solve
 
 EXAMPLE_DIR = Path(__file__).resolve().parent
 if str(EXAMPLE_DIR) not in sys.path:
@@ -20,8 +20,6 @@ if str(EXAMPLE_DIR) not in sys.path:
 from _contact_3d_common import (  # noqa: E402
     CONTACT_EXAMPLES_DIR,
     MESHES_DIR,
-    config_for_workspace_from,
-    run_solve,
 )
 
 
@@ -34,7 +32,6 @@ material_1 = polyfem.neo_hookean(E=591000, nu=0.45, rho=700)
 body_1 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "simple" / "sphere" / "coarse" / "P4.msh"),
     transformation=polyfem.transformation(scale=[0.11938]),
-    volume_selection=1,
 )
 body_1.material(material_1)
 
@@ -84,6 +81,7 @@ polyfem_config = model.config(
             save_solve_sequence_debug=False,
             save_time_sequence=True,
         ),
+        directory='results/3D/higher-order/ball-bounce/P4-dt=0.01',
     ),
     space=polyfem.space(discr_order=4),
     time=polyfem.time(polyfem.object1(dt=0.01, integrator='BDF2', tend=1)),
@@ -91,13 +89,5 @@ polyfem_config = model.config(
 )
 
 
-def config_for_workspace(workspace: Path) -> Any:
-    return config_for_workspace_from(polyfem_config, workspace)
-
-
-def main() -> int:
-    return run_solve(polyfem_config, "contact_3d_higher_order_ball_bounce_p4_dt_0_01_generated_api")
-
-
 if __name__ == "__main__":
-    raise SystemExit(main())
+    solve(cfg=polyfem_config)

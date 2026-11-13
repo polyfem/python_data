@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import Any
 
 import polyfem
+from polyfempy.runtime import solve
 
 EXAMPLE_DIR = Path(__file__).resolve().parent
 if str(EXAMPLE_DIR) not in sys.path:
@@ -20,8 +20,6 @@ if str(EXAMPLE_DIR) not in sys.path:
 from _contact_2d_common import (  # noqa: E402
     CONTACT_EXAMPLES_DIR,
     MESHES_DIR,
-    config_for_workspace_from,
-    run_solve,
 )
 
 
@@ -34,14 +32,10 @@ material_1 = polyfem.neo_hookean(E=100000, nu=0.4, rho=1000)
 body_1 = model.mesh(
     mesh=str(MESHES_DIR / "2D" / "simple" / "circle" / "circle588.obj"),
     transformation=polyfem.transformation(translation=[0, 3], scale=[5.0]),
-    volume_selection=1,
 )
 body_1.material(material_1)
 
-model.obstacle_mesh(
-    mesh=str(MESHES_DIR / "2D" / "codimensional" / "point-plane.obj"),
-    surface_selection=0,
-)
+model.obstacle_mesh(mesh=str(MESHES_DIR / "2D" / "codimensional" / "point-plane.obj"))
 
 polyfem_config = model.config(
     contact=polyfem.contact(enabled=True, dhat=0.001),
@@ -71,19 +65,12 @@ polyfem_config = model.config(
             save_solve_sequence_debug=False,
             save_time_sequence=True,
         ),
+        directory='results/2D/codimensional/disk-codim-points',
     ),
     time=polyfem.time(polyfem.object1(tend=8, dt=0.04)),
     rhs=[0, 9.81],
 )
 
 
-def config_for_workspace(workspace: Path) -> Any:
-    return config_for_workspace_from(polyfem_config, workspace)
-
-
-def main() -> int:
-    return run_solve(polyfem_config, "contact_2d_codimensional_disk_codim_points_generated_api")
-
-
 if __name__ == "__main__":
-    raise SystemExit(main())
+    solve(cfg=polyfem_config)

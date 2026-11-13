@@ -8,9 +8,9 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import Any
 
 import polyfem
+from polyfempy.runtime import solve
 
 EXAMPLE_DIR = Path(__file__).resolve().parent
 if str(EXAMPLE_DIR) not in sys.path:
@@ -19,8 +19,6 @@ if str(EXAMPLE_DIR) not in sys.path:
 from _contact_2d_common import (  # noqa: E402
     CONTACT_EXAMPLES_DIR,
     MESHES_DIR,
-    config_for_workspace_from,
-    run_solve,
 )
 
 
@@ -37,7 +35,8 @@ ball = model.mesh(
 )
 ball.material(rubber)
 ball.velocity(polyfem.velocity_item(value=[67, 0]))
-ball.surface_axis(axis=1, position=0.1025).dirichlet(value=[0, 0])
+fixed = ball.surface_axis(axis=1, position=0.1025)
+fixed.dirichlet(value=[0, 0])
 
 wall = model.mesh(
     mesh=str(MESHES_DIR / "2D" / "simple" / "bar" / "bar792.obj"),
@@ -48,7 +47,7 @@ wall = model.mesh(
     ),
 )
 wall.material(steel)
-wall.surface_axis(axis=1, position=0.1025).dirichlet(value=[0, 0])
+wall.surface_axis(axis=1, position=0.1025, same_as=fixed)
 
 solver = polyfem.solver(
     linear=polyfem.linear(solver="Eigen::PardisoLDLT"),
@@ -61,6 +60,7 @@ solver = polyfem.solver(
 )
 
 output = polyfem.output(
+    directory="results/2D/golf-ball-doformable-wall",
     json="sim.json",
     paraview=polyfem.output_paraview(
         file_name="sim.pvd",
@@ -89,16 +89,5 @@ polyfem_config = model.config(
 )
 
 
-def config_for_workspace(workspace: Path) -> Any:
-    return config_for_workspace_from(polyfem_config, workspace)
-
-
-def main() -> int:
-    return run_solve(
-        polyfem_config,
-        "contact_2d_golf_ball_deformable_wall_generated_api",
-    )
-
-
 if __name__ == "__main__":
-    raise SystemExit(main())
+    solve(cfg=polyfem_config)

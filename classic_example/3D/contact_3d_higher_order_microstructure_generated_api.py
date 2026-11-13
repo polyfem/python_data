@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import Any
 
 import polyfem
+from polyfempy.runtime import solve
 
 EXAMPLE_DIR = Path(__file__).resolve().parent
 if str(EXAMPLE_DIR) not in sys.path:
@@ -20,8 +20,6 @@ if str(EXAMPLE_DIR) not in sys.path:
 from _contact_3d_common import (  # noqa: E402
     CONTACT_EXAMPLES_DIR,
     MESHES_DIR,
-    config_for_workspace_from,
-    run_solve,
 )
 
 
@@ -34,14 +32,12 @@ material_1 = polyfem.neo_hookean(E=6000000.0, nu=0.48, rho=1.03)
 body_1 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "microstructure" / "P4.msh"),
     transformation=polyfem.transformation(scale=[6.0]),
-    volume_selection=1,
 )
 body_1.material(material_1)
 
-body_2_surface_1000 = model.obstacle_mesh(
+obstacle_2 = model.obstacle_mesh(
     mesh=str(MESHES_DIR / "3D" / "simple" / "cube.msh"),
     transformation=polyfem.transformation(dimensions=[9, 0.2, 9], translation=[3, 6.12, 3]),
-    surface_selection=1000,
 )
 
 model.obstacle_mesh(
@@ -49,9 +45,7 @@ model.obstacle_mesh(
     transformation=polyfem.transformation(dimensions=[9, 0.2, 9], translation=[3, -0.12, 3]),
 )
 
-body_2_surface_1000.obstacle_displacement(
-    value=[0, '4.5 * smooth_abs(t - 1, 5) - 4.5', 0],
-)
+obstacle_2.obstacle_displacement(value=[0, '4.5 * smooth_abs(t - 1, 5) - 4.5', 0])
 
 polyfem_config = model.config(
     contact=polyfem.contact(
@@ -93,6 +87,7 @@ polyfem_config = model.config(
             save_solve_sequence_debug=False,
             save_time_sequence=True,
         ),
+        directory='results/3D/higher-order/microstructure',
     ),
     space=polyfem.space(discr_order=2),
     time=polyfem.time(polyfem.object1(dt=0.01, tend=2)),
@@ -100,13 +95,5 @@ polyfem_config = model.config(
 )
 
 
-def config_for_workspace(workspace: Path) -> Any:
-    return config_for_workspace_from(polyfem_config, workspace)
-
-
-def main() -> int:
-    return run_solve(polyfem_config, "contact_3d_higher_order_microstructure_generated_api")
-
-
 if __name__ == "__main__":
-    raise SystemExit(main())
+    solve(cfg=polyfem_config)

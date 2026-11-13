@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import Any
 
 import polyfem
+from polyfempy.runtime import solve
 
 EXAMPLE_DIR = Path(__file__).resolve().parent
 if str(EXAMPLE_DIR) not in sys.path:
@@ -20,8 +20,6 @@ if str(EXAMPLE_DIR) not in sys.path:
 from _contact_3d_common import (  # noqa: E402
     CONTACT_EXAMPLES_DIR,
     MESHES_DIR,
-    config_for_workspace_from,
-    run_solve,
 )
 
 
@@ -38,7 +36,6 @@ body_1 = model.mesh(
         scale=[1.0],
         translation=[-3.4468271355, 0.6087686218, 0],
     ),
-    volume_selection=1,
 )
 body_1.material(material_1)
 
@@ -49,7 +46,6 @@ model.obstacle_mesh(
         rotation=[0, 0, -10],
         translation=[0, 0, 0],
     ),
-    surface_selection=0,
 )
 
 polyfem_config = model.config(
@@ -81,19 +77,12 @@ polyfem_config = model.config(
             save_solve_sequence_debug=False,
             save_time_sequence=True,
         ),
+        directory='results/3D/friction/stick-slip',
     ),
     time=polyfem.time(polyfem.object1(dt=0.025, tend=5)),
     rhs=[0, 9.81, 0],
 )
 
 
-def config_for_workspace(workspace: Path) -> Any:
-    return config_for_workspace_from(polyfem_config, workspace)
-
-
-def main() -> int:
-    return run_solve(polyfem_config, "contact_3d_friction_stick_slip_generated_api")
-
-
 if __name__ == "__main__":
-    raise SystemExit(main())
+    solve(cfg=polyfem_config)

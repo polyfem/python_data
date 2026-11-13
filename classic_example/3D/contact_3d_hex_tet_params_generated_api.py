@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import Any
 
 import polyfem
+from polyfempy.runtime import solve
 
 EXAMPLE_DIR = Path(__file__).resolve().parent
 if str(EXAMPLE_DIR) not in sys.path:
@@ -20,14 +20,42 @@ if str(EXAMPLE_DIR) not in sys.path:
 from _contact_3d_common import (  # noqa: E402
     CONTACT_EXAMPLES_DIR,
     MESHES_DIR,
-    config_for_workspace_from,
-    run_solve,
 )
 
 
 SOURCE_JSON = CONTACT_EXAMPLES_DIR / "3D" / "hex_tet" / "params.json"
 
-polyfem_config = polyfem.config(
+model = polyfem.model()
+
+material_1 = polyfem.neo_hookean(E=100000.0, nu=0.45, rho=1000.0)
+material_2 = polyfem.neo_hookean(E=100000.0, nu=0.45, rho=1000.0)
+
+body_1 = model.mesh(
+    mesh=str(CONTACT_EXAMPLES_DIR / "3D" / "hex_tet" / "hexcube.msh"),
+    transformation=polyfem.transformation(
+        rotation=[0.0, 0.0, 0.0],
+        scale=[1.0, 1.0, 1.0],
+        translation=[0.0, 0.0, 0.0],
+    ),
+)
+body_1.material(material_1)
+
+body_2 = model.mesh(
+    mesh=str(CONTACT_EXAMPLES_DIR / "3D" / "hex_tet" / "cube.msh"),
+    transformation=polyfem.transformation(
+        rotation=[0.0, 0.0, 0.0],
+        scale=[1.0, 1.0, 1.0],
+        translation=[0.0, 1.3, 0.0],
+    ),
+)
+body_2.material(material_2)
+
+body_1.surface_from_file(str(CONTACT_EXAMPLES_DIR / "3D" / "hex_tet" / "surface_sidesets11.txt")).dirichlet(
+    dimension=[True, True, True],
+    value=[0, 0, 0],
+)
+
+polyfem_config = model.config(
     contact=polyfem.contact(
         enabled=True,
         dhat=0.001,
@@ -61,59 +89,12 @@ polyfem_config = polyfem.config(
             save_solve_sequence_debug=False,
             save_time_sequence=True,
         ),
-    ),
-    boundary_conditions=polyfem.boundary_conditions(
-        dirichlet_boundary=polyfem.dirichlet_boundary(
-            items=[
-                polyfem.item(dimension=[True, True, True], id=1111, value=[0, 0, 0]),
-            ],
-        ),
-        rhs=[0, 9.8, 0],
-    ),
-    geometry=polyfem.geometry(
-        items=[
-            polyfem.mesh(
-                mesh=str(CONTACT_EXAMPLES_DIR / "3D" / "hex_tet" / "hexcube.msh"),
-                surface_selection=polyfem.surface_selection(
-                    polyfem.surface_selection_file(
-                        file=str(CONTACT_EXAMPLES_DIR / "3D" / "hex_tet" / "surface_sidesets11.txt"),
-                    ),
-                ),
-                transformation=polyfem.transformation(
-                    rotation=[0.0, 0.0, 0.0],
-                    scale=[1.0, 1.0, 1.0],
-                    translation=[0.0, 0.0, 0.0],
-                ),
-                volume_selection=11,
-            ),
-            polyfem.mesh(
-                mesh=str(CONTACT_EXAMPLES_DIR / "3D" / "hex_tet" / "cube.msh"),
-                transformation=polyfem.transformation(
-                    rotation=[0.0, 0.0, 0.0],
-                    scale=[1.0, 1.0, 1.0],
-                    translation=[0.0, 1.3, 0.0],
-                ),
-                volume_selection=21,
-            ),
-        ],
-    ),
-    materials=polyfem.materials(
-        items=[
-            polyfem.neo_hookean(E=100000.0, id=11, nu=0.45, rho=1000.0),
-            polyfem.neo_hookean(E=100000.0, id=21, nu=0.45, rho=1000.0),
-        ],
+        directory='results/3D/hex_tet/params',
     ),
     time=polyfem.time(polyfem.object1(dt=0.025, integrator='ImplicitEuler', tend=5.0)),
+    rhs=[0, 9.8, 0],
 )
 
 
-def config_for_workspace(workspace: Path) -> Any:
-    return config_for_workspace_from(polyfem_config, workspace)
-
-
-def main() -> int:
-    return run_solve(polyfem_config, "contact_3d_hex_tet_params_generated_api")
-
-
 if __name__ == "__main__":
-    raise SystemExit(main())
+    solve(cfg=polyfem_config)
