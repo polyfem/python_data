@@ -35,32 +35,39 @@ body_1 = model.mesh(
 )
 body_1.material(material_1)
 
-obstacle_2 = model.obstacle_mesh(
+obstacle_2 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "verschoor" / "roller0.obj"),
+    is_obstacle=True,
 )
 
-obstacle_3 = model.obstacle_mesh(
+obstacle_3 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "verschoor" / "roller1.obj"),
+    is_obstacle=True,
 )
 
-obstacle_4 = model.obstacle_mesh(
+obstacle_4 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "verschoor" / "roller2.obj"),
+    is_obstacle=True,
 )
 
-obstacle_5 = model.obstacle_mesh(
+obstacle_5 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "verschoor" / "roller3.obj"),
+    is_obstacle=True,
 )
 
-obstacle_6 = model.obstacle_mesh(
+obstacle_6 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "verschoor" / "roller4.obj"),
+    is_obstacle=True,
 )
 
-obstacle_7 = model.obstacle_mesh(
+obstacle_7 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "verschoor" / "roller5.obj"),
+    is_obstacle=True,
 )
 
-model.obstacle_mesh(
+model.mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "plane.obj"),
+    is_obstacle=True,
     transformation=polyfem.transformation(translation=[0, 0.2, 0], dimensions=[8, 0, 8]),
 )
 

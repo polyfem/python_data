@@ -43,11 +43,10 @@ body_2 = model.mesh(
     n_refs=0,
 )
 body_2.material(material_2)
-body_2_surface = body_2.surface_all()
 
 body_1.velocity(polyfem.velocity_item(value=[67, 0, 0]))
 
-body_2_surface.dirichlet(value=[0, 0, 0])
+body_2.dirichlet(value=[0, 0, 0])
 
 polyfem_config = model.config(
     contact=polyfem.contact(enabled=True, dhat=6.92820323e-05),

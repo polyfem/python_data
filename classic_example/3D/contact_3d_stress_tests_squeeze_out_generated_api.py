@@ -30,6 +30,7 @@ model = polyfem.model()
 body_1 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "creatures" / "alien.msh"),
     transformation=polyfem.transformation(translation=[0, -1.05, 0], rotation=[0, 0, 0], scale=[0.45]),
+    volume_selection=1,
 )
 
 body_2 = model.mesh(
@@ -39,6 +40,7 @@ body_2 = model.mesh(
         rotation=[-90, 0, 0],
         scale=[0.22],
     ),
+    volume_selection=2,
 )
 
 body_3 = model.mesh(
@@ -48,20 +50,24 @@ body_3 = model.mesh(
         rotation=[-90, 0, 0],
         scale=[0.012],
     ),
+    volume_selection=3,
 )
 
 body_4 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "creatures" / "octocat.msh"),
     transformation=polyfem.transformation(translation=[0, 1.9, 0], rotation=[-90, 0, 0], scale=[0.01]),
+    volume_selection=4,
 )
 
-obstacle_5 = model.obstacle_mesh(
+obstacle_5 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "unit-plane.obj"),
+    is_obstacle=True,
     transformation=polyfem.transformation(translation=[-1, 2.25, -1], rotation=[0, 0, 0], scale=[2.0]),
 )
 
-model.obstacle_mesh(
+model.mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "coneBox.obj"),
+    is_obstacle=True,
     transformation=polyfem.transformation(translation=[0, -2, 0], rotation=[0, 0, -90], scale=[1.15]),
 )
 

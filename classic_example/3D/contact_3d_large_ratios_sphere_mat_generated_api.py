@@ -44,8 +44,10 @@ mat = model.mesh(
     transformation=polyfem.transformation(scale=2),
 )
 mat.material(mat_material)
-mat.surface_axis(axis="-x", position=-1).dirichlet(value=["-min(t,0.28)", 0, 0])
-mat.surface_axis(axis="x", position=1).dirichlet(value=["min(t,0.28)", 0, 0])
+mat_left = mat.surface_axis(axis="-x", position=-1)
+mat_right = mat.surface_axis(axis="x", position=1)
+mat_left.dirichlet(value=["-min(t,0.28)", 0, 0])
+mat_right.dirichlet(value=["min(t,0.28)", 0, 0])
 
 solver = polyfem.solver(
     linear=polyfem.linear(solver="Eigen::PardisoLDLT"),

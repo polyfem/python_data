@@ -43,9 +43,8 @@ body_2 = model.mesh(
     transformation=polyfem.transformation(scale=[4, 0.01], translation=[0, 0]),
 )
 body_2.material(material_2)
-body_2_surface = body_2.surface_all()
 
-body_2_surface.dirichlet(
+body_2.dirichlet(
     value=[
         'rotate_2D_x(x, y, max(-t * pi / 2, deg2rad(-45))) - x',
         'rotate_2D_y(x, y, max(-t * pi / 2, deg2rad(-45))) - y',

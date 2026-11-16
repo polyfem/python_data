@@ -36,8 +36,9 @@ body_1 = model.mesh(
 body_1.material(material_1)
 body_1_surface_1 = body_1.surface_axis(axis=2, position=2)
 
-model.obstacle_mesh(
+model.mesh(
     mesh=str(MESHES_DIR / "2D" / "simple" / "erleben" / "crack.obj"),
+    is_obstacle=True,
     transformation=polyfem.transformation(translation=[0, -1]),
 )
 

@@ -35,7 +35,10 @@ body_1 = model.mesh(
 )
 body_1.material(material_1)
 
-model.obstacle_mesh(mesh=str(MESHES_DIR / "2D" / "codimensional" / "point-plane.obj"))
+model.mesh(
+    mesh=str(MESHES_DIR / "2D" / "codimensional" / "point-plane.obj"),
+    is_obstacle=True,
+)
 
 polyfem_config = model.config(
     contact=polyfem.contact(enabled=True, dhat=0.001),

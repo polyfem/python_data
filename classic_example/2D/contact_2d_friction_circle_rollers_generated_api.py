@@ -41,7 +41,7 @@ left_roller = model.mesh(
     transformation=polyfem.transformation(translation=[-0.5, -1], scale=0.8),
 )
 left_roller.material(steel)
-left_roller.surface_all().dirichlet(
+left_roller.dirichlet(
     value=[
         "rotate_2D_x(x + 0.5, y + 1, -t * pi / 2) - (x + 0.5)",
         "rotate_2D_y(x + 0.5, y + 1, -t * pi / 2) - (y + 1)",
@@ -54,7 +54,7 @@ right_roller = model.mesh(
     transformation=polyfem.transformation(translation=[0.5, -1], scale=0.8),
 )
 right_roller.material(steel)
-right_roller.surface_all().dirichlet(
+right_roller.dirichlet(
     value=[
         "rotate_2D_x(x - 0.5, y + 1, t * pi / 2) - (x - 0.5)",
         "rotate_2D_y(x - 0.5, y + 1, t * pi / 2) - (y + 1)",
@@ -67,7 +67,7 @@ ground = model.mesh(
     transformation=polyfem.transformation(translation=[0, -4.01], scale=[8, 0.02]),
 )
 ground.material(steel)
-ground.surface_all().dirichlet(value=[0, 0])
+ground.dirichlet(value=[0, 0])
 
 solver = polyfem.solver(
     linear=polyfem.linear(solver="Eigen::PardisoLDLT"),

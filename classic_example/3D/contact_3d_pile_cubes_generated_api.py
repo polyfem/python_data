@@ -33,7 +33,7 @@ model.mesh_array(
     transformation=polyfem.mesh_array_transformation(scale=[0.25], translation=[-0.375, 0, -0.375]),
 )
 
-model.obstacle_mesh(mesh=str(MESHES_DIR / "3D" / "obstacles" / "bowl.obj"))
+model.mesh(is_obstacle=True, mesh=str(MESHES_DIR / "3D" / "obstacles" / "bowl.obj"))
 
 polyfem_config = model.config(
     contact=polyfem.contact(enabled=True, dhat=0.001),

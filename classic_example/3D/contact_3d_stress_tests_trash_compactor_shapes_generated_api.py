@@ -30,20 +30,24 @@ model = polyfem.model()
 body_1 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "simple" / "sphere" / "sphere5K.msh"),
     transformation=polyfem.transformation(translation=[-0.48, 0, 0], rotation=[0, 0, 0], scale=[1.0]),
+    volume_selection=1,
 )
 
 body_2 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "simple" / "mat" / "mat40x40.msh"),
     transformation=polyfem.transformation(translation=[0.04, 0, 0], rotation=[0, 0, 90], scale=[1.0]),
+    volume_selection=2,
 )
 
 body_3 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "creatures" / "bunny.msh"),
     transformation=polyfem.transformation(translation=[0.63, 0, 0], rotation=[0, 0, 0], scale=[0.3]),
+    volume_selection=3,
 )
 
-obstacle_4 = model.obstacle_mesh(
+obstacle_4 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "unit-plane.obj"),
+    is_obstacle=True,
     transformation=polyfem.transformation(
         translation=[-1, 1.5, -1.5],
         rotation=[0, 0, -90],
@@ -51,8 +55,9 @@ obstacle_4 = model.obstacle_mesh(
     ),
 )
 
-obstacle_5 = model.obstacle_mesh(
+obstacle_5 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "unit-plane.obj"),
+    is_obstacle=True,
     transformation=polyfem.transformation(
         translation=[1, 1.5, -1.5],
         rotation=[0, 0, -90],
@@ -60,8 +65,9 @@ obstacle_5 = model.obstacle_mesh(
     ),
 )
 
-obstacle_6 = model.obstacle_mesh(
+obstacle_6 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "unit-plane.obj"),
+    is_obstacle=True,
     transformation=polyfem.transformation(
         translation=[-1.5, -1, -1.5],
         rotation=[0, 0, 0],
@@ -69,13 +75,15 @@ obstacle_6 = model.obstacle_mesh(
     ),
 )
 
-obstacle_7 = model.obstacle_mesh(
+obstacle_7 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "unit-plane.obj"),
+    is_obstacle=True,
     transformation=polyfem.transformation(translation=[-1.5, 1, -1.5], rotation=[0, 0, 0], scale=[3.0]),
 )
 
-obstacle_8 = model.obstacle_mesh(
+obstacle_8 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "unit-plane.obj"),
+    is_obstacle=True,
     transformation=polyfem.transformation(
         translation=[-1.5, 1.5, -1],
         rotation=[90, 0, 0],
@@ -83,8 +91,9 @@ obstacle_8 = model.obstacle_mesh(
     ),
 )
 
-obstacle_9 = model.obstacle_mesh(
+obstacle_9 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "unit-plane.obj"),
+    is_obstacle=True,
     transformation=polyfem.transformation(translation=[-1.5, 1.5, 1], rotation=[90, 0, 0], scale=[3.0]),
 )
 

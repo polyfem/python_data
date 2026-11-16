@@ -34,10 +34,12 @@ body_1 = model.mesh(
         scale=[0.008394050297],
         translation=[0.4547526249, 0.5227239301, -0.02286748313],
     ),
+    volume_selection=1,
 )
 body_1_surface_1 = body_1.surface_box(box=[[0.97, 0, 0], [1, 1, 1]], relative=True)
 
-model.obstacle_mesh(
+model.mesh(
+    is_obstacle=True,
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "funnel.obj"),
     transformation=polyfem.transformation(
         rotation=[0, 0, 90],

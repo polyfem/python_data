@@ -27,14 +27,14 @@ SOURCE_JSON = CONTACT_EXAMPLES_DIR / "3D" / "static" / "two-cubes.json"
 
 model = polyfem.model()
 
-body_1 = model.geometry_mesh(
+body_1 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "simple" / "cube.msh"),
     transformation=polyfem.transformation(translation=[0, 0, 0]),
     n_refs=2,
 )
 body_1_surface_1 = body_1.surface_axis(axis=-2, position=-0.499)
 
-model.geometry_mesh(
+model.mesh(
     mesh=str(MESHES_DIR / "3D" / "simple" / "cube.msh"),
     transformation=polyfem.transformation(translation=[0, 1.2, 0]),
     n_refs=2,

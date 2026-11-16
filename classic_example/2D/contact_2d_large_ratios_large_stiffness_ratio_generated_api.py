@@ -48,9 +48,8 @@ body_3 = model.mesh(
     transformation=polyfem.transformation(scale=[2, 0.01], translation=[0, -0.56, 0]),
 )
 body_3.material(material_3)
-body_3_surface = body_3.surface_all()
 
-body_3_surface.dirichlet(value=[0, 0])
+body_3.dirichlet(value=[0, 0])
 
 polyfem_config = model.config(
     contact=polyfem.contact(enabled=True, dhat=0.001, friction_coefficient=0.1),

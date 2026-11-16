@@ -39,28 +39,33 @@ body_1 = model.mesh(
 )
 body_1.material(material_1)
 
-model.obstacle_mesh(
+model.mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "triangle.obj"),
+    is_obstacle=True,
     transformation=polyfem.transformation(translation=[0.2, -0.1, -0.7], rotation=[0, 0, 90]),
 )
 
-model.obstacle_mesh(
+model.mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "triangle.obj"),
+    is_obstacle=True,
     transformation=polyfem.transformation(translation=[0.4, -0.1, -0.7], rotation=[0, 0, 90]),
 )
 
-model.obstacle_mesh(
+model.mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "triangle.obj"),
+    is_obstacle=True,
     transformation=polyfem.transformation(translation=[0.6, -0.1, -0.7], rotation=[0, 0, 90]),
 )
 
-model.obstacle_mesh(
+model.mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "triangle.obj"),
+    is_obstacle=True,
     transformation=polyfem.transformation(translation=[0.8, -0.1, -0.7], rotation=[0, 0, 90]),
 )
 
-model.obstacle_mesh(
+model.mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "triangle.obj"),
+    is_obstacle=True,
     transformation=polyfem.transformation(
         translation=[0.1, -0.1, 0.3],
         rotation=[0, 180, 90],
@@ -68,8 +73,9 @@ model.obstacle_mesh(
     ),
 )
 
-model.obstacle_mesh(
+model.mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "triangle.obj"),
+    is_obstacle=True,
     transformation=polyfem.transformation(
         translation=[0.3, -0.1, 0.3],
         rotation=[0, 180, 90],
@@ -77,8 +83,9 @@ model.obstacle_mesh(
     ),
 )
 
-model.obstacle_mesh(
+model.mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "triangle.obj"),
+    is_obstacle=True,
     transformation=polyfem.transformation(
         translation=[0.5, -0.1, 0.3],
         rotation=[0, 180, 90],
@@ -86,8 +93,9 @@ model.obstacle_mesh(
     ),
 )
 
-model.obstacle_mesh(
+model.mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "triangle.obj"),
+    is_obstacle=True,
     transformation=polyfem.transformation(
         translation=[0.7, -0.1, 0.3],
         rotation=[0, 180, 90],
@@ -95,8 +103,9 @@ model.obstacle_mesh(
     ),
 )
 
-model.obstacle_mesh(
+model.mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "triangle.obj"),
+    is_obstacle=True,
     transformation=polyfem.transformation(
         translation=[0.9, -0.1, 0.3],
         rotation=[0, 180, 90],

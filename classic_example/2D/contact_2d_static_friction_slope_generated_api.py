@@ -27,18 +27,17 @@ SOURCE_JSON = CONTACT_EXAMPLES_DIR / "2D" / "static" / "friction-slope.json"
 
 model = polyfem.model()
 
-body_1 = model.geometry_mesh(
+body_1 = model.mesh(
     mesh=str(MESHES_DIR / "2D" / "simple" / "square.obj"),
     transformation=polyfem.transformation(translation=[0, 0], rotation=[-30.0], scale=[5, 0.02]),
 )
-body_1_surface = body_1.surface_all()
 
-model.geometry_mesh(
+model.mesh(
     mesh=str(MESHES_DIR / "2D" / "simple" / "square1K.msh"),
     transformation=polyfem.transformation(translation=[0.26, 0.4503], rotation=[-30.0], scale=[1.0]),
 )
 
-body_1_surface.dirichlet(value=[0, 0])
+body_1.dirichlet(value=[0, 0])
 
 polyfem_config = model.config(
     contact=polyfem.contact(enabled=True, dhat=0.001, friction_coefficient=0.6),

@@ -63,8 +63,9 @@ body_5 = model.mesh(
 )
 body_5.material(material_1)
 
-model.obstacle_mesh(
+model.mesh(
     mesh=str(MESHES_DIR / "2D" / "obstacles" / "line.obj"),
+    is_obstacle=True,
     transformation=polyfem.transformation(translation=[0, -0.315]),
 )
 

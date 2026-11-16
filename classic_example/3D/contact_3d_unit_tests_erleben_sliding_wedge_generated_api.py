@@ -36,7 +36,8 @@ body_1 = model.mesh(
 body_1.material(material_1)
 body_1_surface_1 = body_1.surface_axis(axis=2, position=2)
 
-model.obstacle_mesh(
+model.mesh(
+    is_obstacle=True,
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "plane.obj"),
     transformation=polyfem.transformation(translation=[0, -1, 0]),
 )

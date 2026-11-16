@@ -35,8 +35,9 @@ body_1 = model.mesh(
 )
 body_1.material(material_1)
 
-model.obstacle_mesh(
+model.mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "erleben" / "spike.obj"),
+    is_obstacle=True,
     transformation=polyfem.transformation(translation=[0, -3, 0]),
 )
 

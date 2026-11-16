@@ -37,7 +37,8 @@ body_1.material(material_1)
 body_1_surface_1 = body_1.surface_axis(axis=2, position=2)
 body_1_point_1 = body_1.point_box(box=[[0.1, 2, -10], [1, 10, 10]])
 
-model.obstacle_mesh(
+model.mesh(
+    is_obstacle=True,
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "erleben" / "hole.obj"),
     transformation=polyfem.transformation(translation=[0, -1, 0]),
 )

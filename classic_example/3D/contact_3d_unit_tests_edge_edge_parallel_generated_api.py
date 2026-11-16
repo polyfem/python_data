@@ -35,7 +35,8 @@ body_1 = model.mesh(
 )
 body_1.material(material_1)
 
-model.obstacle_mesh(
+model.mesh(
+    is_obstacle=True,
     mesh=str(MESHES_DIR / "3D" / "simple" / "tet" / "tet-perp-edges.msh"),
     transformation=polyfem.transformation(translation=[0, -0.5, 0]),
 )

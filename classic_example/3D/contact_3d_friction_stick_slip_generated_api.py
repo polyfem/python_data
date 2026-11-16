@@ -39,7 +39,8 @@ body_1 = model.mesh(
 )
 body_1.material(material_1)
 
-model.obstacle_mesh(
+model.mesh(
+    is_obstacle=True,
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "plane.obj"),
     transformation=polyfem.transformation(
         dimensions=[10, 0, 10],

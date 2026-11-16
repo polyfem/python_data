@@ -44,7 +44,7 @@ wall = model.mesh(
     ),
 )
 wall.material(steel)
-wall.surface_all().dirichlet(value=[0, 0])
+wall.dirichlet(value=[0, 0])
 
 solver = polyfem.solver(
     linear=polyfem.linear(solver="Eigen::PardisoLDLT"),

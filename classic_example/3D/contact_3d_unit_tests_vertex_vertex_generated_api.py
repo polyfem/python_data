@@ -35,9 +35,13 @@ body_1 = model.mesh(
 )
 body_1.material(material_1)
 
-model.obstacle_mesh(mesh=str(MESHES_DIR / "3D" / "simple" / "tet" / "tet-corner.msh"))
+model.mesh(
+    is_obstacle=True,
+    mesh=str(MESHES_DIR / "3D" / "simple" / "tet" / "tet-corner.msh"),
+)
 
-model.obstacle_mesh(
+model.mesh(
+    is_obstacle=True,
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "plane.obj"),
     transformation=polyfem.transformation(dimensions=[5, 0, 5], translation=[0.5, 0, 0.5]),
 )

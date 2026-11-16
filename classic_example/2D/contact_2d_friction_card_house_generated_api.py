@@ -123,9 +123,8 @@ body_10 = model.mesh(
     transformation=polyfem.transformation(translation=[0.7725, -0.4515], dimensions=[4, 0.013]),
 )
 body_10.material(material_3)
-body_10_surface = body_10.surface_all()
 
-body_10_surface.dirichlet(value=[0, 0])
+body_10.dirichlet(value=[0, 0])
 
 polyfem_config = model.config(
     contact=polyfem.contact(enabled=True, dhat=0.0001, epsv=1e-05, friction_coefficient=0.9),

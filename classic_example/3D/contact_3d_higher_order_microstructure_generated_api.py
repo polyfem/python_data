@@ -35,12 +35,14 @@ body_1 = model.mesh(
 )
 body_1.material(material_1)
 
-obstacle_2 = model.obstacle_mesh(
+obstacle_2 = model.mesh(
+    is_obstacle=True,
     mesh=str(MESHES_DIR / "3D" / "simple" / "cube.msh"),
     transformation=polyfem.transformation(dimensions=[9, 0.2, 9], translation=[3, 6.12, 3]),
 )
 
-model.obstacle_mesh(
+model.mesh(
+    is_obstacle=True,
     mesh=str(MESHES_DIR / "3D" / "simple" / "cube.msh"),
     transformation=polyfem.transformation(dimensions=[9, 0.2, 9], translation=[3, -0.12, 3]),
 )

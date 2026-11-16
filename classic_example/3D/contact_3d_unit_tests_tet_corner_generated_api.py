@@ -35,23 +35,27 @@ body_1 = model.mesh(
 )
 body_1.material(material_1)
 
-model.obstacle_mesh(
+model.mesh(
     mesh=str(MESHES_DIR / "3D" / "simple" / "cube.msh"),
+    is_obstacle=True,
     transformation=polyfem.transformation(translation=[-0.5, 0, 0.5]),
 )
 
-model.obstacle_mesh(
+model.mesh(
     mesh=str(MESHES_DIR / "3D" / "simple" / "cube.msh"),
+    is_obstacle=True,
     transformation=polyfem.transformation(translation=[0.5, 0, -0.5]),
 )
 
-model.obstacle_mesh(
+model.mesh(
     mesh=str(MESHES_DIR / "3D" / "simple" / "cube.msh"),
+    is_obstacle=True,
     transformation=polyfem.transformation(translation=[1.5, 0, 0.5]),
 )
 
-model.obstacle_mesh(
+model.mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "plane.obj"),
+    is_obstacle=True,
     transformation=polyfem.transformation(translation=[0.5, -0.5, 0.5], dimensions=[5, 0, 5]),
 )
 

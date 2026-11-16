@@ -41,9 +41,8 @@ body_2 = model.mesh(
     transformation=polyfem.transformation(rotation=[180.0], translation=[0, -0.5, 0]),
 )
 body_2.material(material_2)
-body_2_surface = body_2.surface_all()
 
-body_2_surface.dirichlet(value=[0, 0])
+body_2.dirichlet(value=[0, 0])
 
 polyfem_config = model.config(
     contact=polyfem.contact(enabled=True, dhat=0.001),

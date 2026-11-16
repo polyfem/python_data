@@ -43,11 +43,10 @@ body_2 = model.mesh(
     transformation=polyfem.transformation(translation=[0, 0], scale=[4, 0.01]),
 )
 body_2.material(material_2)
-body_2_surface = body_2.surface_all()
 
 body_1.velocity(polyfem.velocity_item(value=[0, 0]))
 
-body_2_surface.dirichlet(value=['4 * t^2', 0])
+body_2.dirichlet(value=['4 * t^2', 0])
 
 polyfem_config = model.config(
     contact=polyfem.contact(enabled=True, dhat=0.001, epsv=0.004, friction_coefficient=0.5),

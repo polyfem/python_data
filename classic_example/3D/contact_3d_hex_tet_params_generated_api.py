@@ -39,6 +39,7 @@ body_1 = model.mesh(
     ),
 )
 body_1.material(material_1)
+body_1_surface_file_1111 = body_1.surface_from_file(str(CONTACT_EXAMPLES_DIR / "3D" / "hex_tet" / "surface_sidesets11.txt"))
 
 body_2 = model.mesh(
     mesh=str(CONTACT_EXAMPLES_DIR / "3D" / "hex_tet" / "cube.msh"),
@@ -50,10 +51,7 @@ body_2 = model.mesh(
 )
 body_2.material(material_2)
 
-body_1.surface_from_file(str(CONTACT_EXAMPLES_DIR / "3D" / "hex_tet" / "surface_sidesets11.txt")).dirichlet(
-    dimension=[True, True, True],
-    value=[0, 0, 0],
-)
+body_1_surface_file_1111.dirichlet(dimension=[True, True, True], value=[0, 0, 0])
 
 polyfem_config = model.config(
     contact=polyfem.contact(

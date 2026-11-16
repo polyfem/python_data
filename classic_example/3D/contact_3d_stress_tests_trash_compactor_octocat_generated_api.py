@@ -35,8 +35,9 @@ body_1 = model.mesh(
 )
 body_1.material(material_1)
 
-obstacle_2 = model.obstacle_mesh(
+obstacle_2 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "unit-plane.obj"),
+    is_obstacle=True,
     transformation=polyfem.transformation(
         translation=[-1, 1.5, -1.5],
         rotation=[0, 0, -90],
@@ -44,8 +45,9 @@ obstacle_2 = model.obstacle_mesh(
     ),
 )
 
-obstacle_3 = model.obstacle_mesh(
+obstacle_3 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "unit-plane.obj"),
+    is_obstacle=True,
     transformation=polyfem.transformation(
         translation=[1, 1.5, -1.5],
         rotation=[0, 0, -90],
@@ -53,8 +55,9 @@ obstacle_3 = model.obstacle_mesh(
     ),
 )
 
-obstacle_4 = model.obstacle_mesh(
+obstacle_4 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "unit-plane.obj"),
+    is_obstacle=True,
     transformation=polyfem.transformation(
         translation=[-1.5, -1, -1.5],
         rotation=[0, 0, 0],
@@ -62,13 +65,15 @@ obstacle_4 = model.obstacle_mesh(
     ),
 )
 
-obstacle_5 = model.obstacle_mesh(
+obstacle_5 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "unit-plane.obj"),
+    is_obstacle=True,
     transformation=polyfem.transformation(translation=[-1.5, 1, -1.5], rotation=[0, 0, 0], scale=[3.0]),
 )
 
-obstacle_6 = model.obstacle_mesh(
+obstacle_6 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "unit-plane.obj"),
+    is_obstacle=True,
     transformation=polyfem.transformation(
         translation=[-1.5, 1.5, -1],
         rotation=[90, 0, 0],
@@ -76,8 +81,9 @@ obstacle_6 = model.obstacle_mesh(
     ),
 )
 
-obstacle_7 = model.obstacle_mesh(
+obstacle_7 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "unit-plane.obj"),
+    is_obstacle=True,
     transformation=polyfem.transformation(translation=[-1.5, 1.5, 1], rotation=[90, 0, 0], scale=[3.0]),
 )
 

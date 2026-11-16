@@ -36,14 +36,16 @@ body_1 = model.mesh(
 body_1.surface_all()
 body_1.material(material_1)
 
-model.obstacle_mesh_array(
+model.mesh_array(
     array=polyfem.array(offset=1, size=[21, 1]),
+    is_obstacle=True,
     mesh=str(MESHES_DIR / "2D" / "codimensional" / "edge.obj"),
     transformation=polyfem.mesh_array_transformation(rotation=[90.0]),
 ).surface_all()
 
-obstacle_3 = model.obstacle_mesh_array(
+obstacle_3 = model.mesh_array(
     array=polyfem.array(offset=1, size=[21, 1]),
+    is_obstacle=True,
     mesh=str(MESHES_DIR / "2D" / "codimensional" / "edge.obj"),
     transformation=polyfem.mesh_array_transformation(rotation=[90.0], translation=[0, 10]),
 )

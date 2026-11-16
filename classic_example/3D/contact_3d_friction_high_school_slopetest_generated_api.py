@@ -53,7 +53,7 @@ slope = model.mesh(
     ),
 )
 slope.material(steel)
-slope.surface_all().dirichlet(value=[0, 0, 0])
+slope.dirichlet(value=[0, 0, 0])
 
 solver = polyfem.solver(
     linear=polyfem.linear(solver="Eigen::PardisoLDLT"),
