@@ -11,7 +11,7 @@ git submodule update --init --recursive examples
 
 ## Layout
 
-- `quickstart/`: small, self-contained examples for the public API.
+- `quickstart/`: small examples for the public API, including a cantilever mesh.
 - `classic_example/2D/`: 2D generated-API examples.
 - `classic_example/3D/`: 3D generated-API examples.
 
@@ -20,13 +20,21 @@ git submodule update --init --recursive examples
 Install `polyfempy` first, then run these commands from this repository:
 
 ```sh
+python quickstart/beam.py
 python quickstart/static_elasticity.py
 python quickstart/transient_elasticity.py
 ```
 
-Both examples create a small square mesh and need no external data files.
-They use `Eigen::SimplicialLDLT`, which does not require Pardiso. The transient
-example runs five time steps and writes to `results/transient_square`.
+The beam example uses the small `beam.obj` file beside the script. It models
+a 1 m x 0.2 m elastic beam with a fixed left end and a downward body force.
+It prints a largest displacement component of about `0.003648 m`.
+Keep `beam.py` and `beam.obj` together when copying the example elsewhere.
+The mesh has 297 vertices and 512 triangles on a regular rectangular grid.
+
+The other two examples create a small square mesh. All three use
+`Eigen::SimplicialLDLT`, which does not require Pardiso, and need no
+`polyfem-data` checkout. The transient example runs five time steps and writes
+to `results/transient_square`.
 
 ## Classic example dependencies
 
@@ -60,8 +68,9 @@ $env:POLYFEM_DATA_ROOT = "C:\path\to\polyfem-data"
 
 First generate and install the parent `polyfem-python` package according to its
 `BUILD.md`, then use that same Python environment here. Cloning this repository
-does not install the compiled solver. The parent README's small square example
-is the first installation check; these contact cases are larger reference models.
+does not install the compiled solver. Start with the small square self-check
+in the parent's `INSTALL.md` or the README's cantilever beam before running
+these larger reference models.
 
 Most cases explicitly select `Eigen::PardisoLDLT`, which requires a backend build
 with that solver available. The parent's regression diagnostic substitutes a
