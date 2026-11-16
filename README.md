@@ -45,7 +45,9 @@ import polyfem
 from polyfempy import solve
 ```
 
-They also read source JSON files and meshes from `polyfem-data/contact`.
+The 93 classic examples build configurations in Python and use assets from
+`polyfem-data/contact`. Each example names its reference JSON in `SOURCE_JSON`;
+a few schema compatibility fallbacks also read that JSON.
 By default, the helper scripts look for a sibling `polyfem-data` checkout:
 
 - inside `polyfem-python/examples`, this resolves to `polyfem-python/polyfem-data`;
