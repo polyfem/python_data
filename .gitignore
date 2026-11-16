@@ -8,6 +8,7 @@ classic_example/2D/2D_examples_outputs/
 classic_example/3D/3D_examples_outputs/
 runs/
 outputs/
+/results/
 *_examples_outputs/
 
 # PolyFEM / ParaView outputs
