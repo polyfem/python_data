@@ -38,18 +38,23 @@ sphere = model.mesh(
     ),
 )
 sphere.material(sphere_material)
+sphere.rhs(value=[0, 9.81, 0])
 
 mat = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "simple" / "mat" / "mat40x40.msh"),
     transformation=polyfem.transformation(scale=2),
 )
 mat.material(mat_material)
+mat.rhs(value=[0, 9.81, 0])
 mat_left = mat.surface_axis(axis="-x", position=-1)
 mat_right = mat.surface_axis(axis="x", position=1)
 mat_left.dirichlet(value=["-min(t,0.28)", 0, 0])
 mat_right.dirichlet(value=["min(t,0.28)", 0, 0])
 
-solver = polyfem.solver(
+model.contact(enabled=True, dhat=0.001)
+model.time(dt=0.01, tend=2.5)
+
+model.solver(
     linear=polyfem.linear(solver="Eigen::PardisoLDLT"),
     nonlinear=polyfem.nonlinear(
         iterations_per_strategy=1,
@@ -59,7 +64,7 @@ solver = polyfem.solver(
     advanced=polyfem.solver_advanced(lump_mass_matrix=True),
 )
 
-output = polyfem.output(
+model.output(
     directory="results/3D/large-ratios/sphere-mat",
     json="sim.json",
     paraview=polyfem.output_paraview(
@@ -79,14 +84,7 @@ output = polyfem.output(
     ),
 )
 
-polyfem_config = model.config(
-    rhs=[0, 9.81, 0],
-    time_tend=2.5,
-    time_dt=0.01,
-    contact=polyfem.contact(enabled=True, dhat=0.001),
-    solver=solver,
-    output=output,
-)
+polyfem_config = model.config()
 
 
 if __name__ == "__main__":

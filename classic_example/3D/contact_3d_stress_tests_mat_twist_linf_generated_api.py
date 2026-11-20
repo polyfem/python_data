@@ -34,6 +34,7 @@ body_1 = model.mesh(
     transformation=polyfem.transformation(translation=[0, 0, 0], rotation=[90, 0, 0]),
 )
 body_1.material(material_1)
+body_1.rhs(value=[0, 0, 0])
 body_1_surface_1 = body_1.surface_axis(axis=1, position=0.5)
 body_1_surface_2 = body_1.surface_axis(axis=-1, position=-0.5)
 
@@ -48,40 +49,36 @@ body_1_surface_2.dirichlet(
     value=[0, 'y*cos((0.4*pi)*t)-z*sin((0.4*pi)*t)-y', 'y*sin((0.4*pi)*t)+z*cos((0.4*pi)*t)-z'],
 )
 
-polyfem_config = model.config(
-    contact=polyfem.contact(enabled=True, dhat=0.001),
-    solver=polyfem.solver(
-        linear=polyfem.linear(solver='Eigen::PardisoLDLT'),
-        nonlinear=polyfem.nonlinear(
-            iterations_per_strategy=1,
-            line_search=polyfem.line_search(method='RobustArmijo'),
-            solver='Newton',
-            norm_type='Linf',
-        ),
-        advanced=polyfem.solver_advanced(lump_mass_matrix=True),
+model.contact(enabled=True, dhat=0.001)
+model.solver(
+    linear=polyfem.linear(solver='Eigen::PardisoLDLT'),
+    nonlinear=polyfem.nonlinear(
+        iterations_per_strategy=1,
+        line_search=polyfem.line_search(method='RobustArmijo'),
+        solver='Newton',
+        norm_type='Linf',
     ),
-    output=polyfem.output(
-        json='sim.json',
-        paraview=polyfem.output_paraview(
-            file_name='sim.pvd',
-            options=polyfem.options(
-                material=True,
-                body_ids=True,
-                tensor_values=False,
-                discretization_order=False,
-                nodes=False,
-            ),
-            vismesh_rel_area=10000000,
-        ),
-        advanced=polyfem.output_advanced(
-            save_solve_sequence_debug=False,
-            save_time_sequence=True,
-        ),
-        directory='results/3D/stress-tests/mat-twist-Linf',
-    ),
-    time=polyfem.time(polyfem.object1(tend=100, dt=0.04)),
-    rhs=[0, 0, 0],
+    advanced=polyfem.solver_advanced(lump_mass_matrix=True),
 )
+model.output(
+    json='sim.json',
+    paraview=polyfem.output_paraview(
+        file_name='sim.pvd',
+        options=polyfem.options(
+            material=True,
+            body_ids=True,
+            tensor_values=False,
+            discretization_order=False,
+            nodes=False,
+        ),
+        vismesh_rel_area=10000000,
+    ),
+    advanced=polyfem.output_advanced(save_solve_sequence_debug=False, save_time_sequence=True),
+    directory='results/3D/stress-tests/mat-twist-Linf',
+)
+model.time(tend=100, dt=0.04)
+
+polyfem_config = model.config()
 
 
 if __name__ == "__main__":

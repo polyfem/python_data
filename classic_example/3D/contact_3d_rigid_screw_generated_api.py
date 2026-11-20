@@ -34,6 +34,7 @@ body_1 = model.mesh(
     transformation=polyfem.transformation(scale=[0.01]),
 )
 body_1.material(material_1)
+body_1.rhs(value=[0, 9.81, 0])
 
 model.mesh(
     is_obstacle=True,
@@ -41,41 +42,37 @@ model.mesh(
     transformation=polyfem.transformation(scale=[0.01]),
 )
 
-polyfem_config = model.config(
-    contact=polyfem.contact(enabled=True, dhat=0.0001),
-    solver=polyfem.solver(
-        linear=polyfem.linear(solver='Eigen::PardisoLDLT'),
-        nonlinear=polyfem.nonlinear(
-            iterations_per_strategy=1,
-            line_search=polyfem.line_search(method='RobustArmijo'),
-            solver='Newton',
-            grad_norm_tol=1e-08,
-            rel_grad_norm_tol=1e-08,
-        ),
-        advanced=polyfem.solver_advanced(lump_mass_matrix=True),
+model.contact(enabled=True, dhat=0.0001)
+model.solver(
+    linear=polyfem.linear(solver='Eigen::PardisoLDLT'),
+    nonlinear=polyfem.nonlinear(
+        iterations_per_strategy=1,
+        line_search=polyfem.line_search(method='RobustArmijo'),
+        solver='Newton',
+        grad_norm_tol=1e-08,
+        rel_grad_norm_tol=1e-08,
     ),
-    output=polyfem.output(
-        json='sim.json',
-        paraview=polyfem.output_paraview(
-            file_name='screw.pvd',
-            options=polyfem.options(
-                material=True,
-                body_ids=True,
-                tensor_values=False,
-                discretization_order=False,
-                nodes=False,
-            ),
-            vismesh_rel_area=10000000,
-        ),
-        advanced=polyfem.output_advanced(
-            save_solve_sequence_debug=False,
-            save_time_sequence=True,
-        ),
-        directory='results/3D/rigid/screw',
-    ),
-    time=polyfem.time(polyfem.object1(dt=0.01, tend=5)),
-    rhs=[0, 9.81, 0],
+    advanced=polyfem.solver_advanced(lump_mass_matrix=True),
 )
+model.output(
+    json='sim.json',
+    paraview=polyfem.output_paraview(
+        file_name='screw.pvd',
+        options=polyfem.options(
+            material=True,
+            body_ids=True,
+            tensor_values=False,
+            discretization_order=False,
+            nodes=False,
+        ),
+        vismesh_rel_area=10000000,
+    ),
+    advanced=polyfem.output_advanced(save_solve_sequence_debug=False, save_time_sequence=True),
+    directory='results/3D/rigid/screw',
+)
+model.time(dt=0.01, tend=5)
+
+polyfem_config = model.config()
 
 
 if __name__ == "__main__":

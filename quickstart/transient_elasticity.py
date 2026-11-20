@@ -20,7 +20,7 @@ def main() -> Result:
         square = model.mesh(mesh=str(mesh))
         square.material(polyfem.linear_elasticity(E=1000, nu=0.3, rho=1))
         square.dirichlet(value=[0, 0])
-        model.rhs([0, -1])
+        square.rhs(value=[0, -1])
         model.time(dt=0.01, time_steps=5, integrator="BDF")
         model.solver(linear=polyfem.linear(solver="Eigen::SimplicialLDLT"))
         model.output(directory=str(Path("results/transient_square").resolve()))

@@ -34,6 +34,7 @@ ball = model.mesh(
     transformation=polyfem.transformation(scale=0.04),
 )
 ball.material(rubber)
+ball.rhs(value=[0, 0, 0])
 ball.velocity(polyfem.velocity_item(value=[67, 0, 0]))
 
 wall = model.mesh(
@@ -44,9 +45,13 @@ wall = model.mesh(
     ),
 )
 wall.material(steel)
+wall.rhs(value=[0, 0, 0])
 wall.dirichlet(value=[0, 0, 0])
 
-solver = polyfem.solver(
+model.contact(enabled=True, dhat=6.92820323e-05)
+model.time(dt=2e-05, tend=0.004)
+
+model.solver(
     linear=polyfem.linear(solver="Eigen::PardisoLDLT"),
     nonlinear=polyfem.nonlinear(
         iterations_per_strategy=1,
@@ -56,7 +61,7 @@ solver = polyfem.solver(
     advanced=polyfem.solver_advanced(lump_mass_matrix=True),
 )
 
-output = polyfem.output(
+model.output(
     directory="results/3D/golf-ball",
     json="sim.json",
     paraview=polyfem.output_paraview(
@@ -77,14 +82,7 @@ output = polyfem.output(
     ),
 )
 
-polyfem_config = model.config(
-    rhs=[0, 0, 0],
-    time_tend=0.004,
-    time_dt=2e-05,
-    contact=polyfem.contact(enabled=True, dhat=6.92820323e-05),
-    solver=solver,
-    output=output,
-)
+polyfem_config = model.config()
 
 
 if __name__ == "__main__":

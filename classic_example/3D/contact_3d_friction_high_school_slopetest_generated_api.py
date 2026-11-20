@@ -43,6 +43,7 @@ block = model.mesh(
     ),
 )
 block.material(rubber)
+block.rhs(value=[0, 9.81, 0])
 
 slope = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "simple" / "cube.msh"),
@@ -53,9 +54,18 @@ slope = model.mesh(
     ),
 )
 slope.material(steel)
+slope.rhs(value=[0, 9.81, 0])
 slope.dirichlet(value=[0, 0, 0])
 
-solver = polyfem.solver(
+model.contact(
+    enabled=True,
+    dhat=0.001,
+    epsv=1e-05,
+    friction_coefficient=0.5,
+)
+model.time(dt=0.025, tend=2.5)
+
+model.solver(
     linear=polyfem.linear(solver="Eigen::PardisoLDLT"),
     nonlinear=polyfem.nonlinear(
         iterations_per_strategy=1,
@@ -69,7 +79,7 @@ solver = polyfem.solver(
     advanced=polyfem.solver_advanced(lump_mass_matrix=True),
 )
 
-output = polyfem.output(
+model.output(
     directory="results/3D/friction/high-school-physics-slopetest-mu=0.50",
     json="sim.json",
     paraview=polyfem.output_paraview(
@@ -89,19 +99,7 @@ output = polyfem.output(
     ),
 )
 
-polyfem_config = model.config(
-    rhs=[0, 9.81, 0],
-    time_tend=2.5,
-    time_dt=0.025,
-    contact=polyfem.contact(
-        enabled=True,
-        dhat=0.001,
-        epsv=1e-05,
-        friction_coefficient=0.5,
-    ),
-    solver=solver,
-    output=output,
-)
+polyfem_config = model.config()
 
 
 if __name__ == "__main__":

@@ -17,7 +17,7 @@ def main() -> Result:
     left.dirichlet(value=[0, 0])
 
     # Apply a downward body force (N/m^3).
-    model.rhs([0, -1000])
+    beam.rhs(value=[0, -1000])
     model.solver(linear=polyfem.linear(solver="Eigen::SimplicialLDLT"))
 
     result = solve(cfg=model.config())

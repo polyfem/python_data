@@ -36,6 +36,7 @@ body_1 = model.mesh(
     transformation=polyfem.transformation(translation=[0, 0.5055]),
 )
 body_1.material(material_1)
+body_1.rhs(value=[0, 9.81])
 
 body_2 = model.mesh(
     enabled=True,
@@ -43,6 +44,7 @@ body_2 = model.mesh(
     transformation=polyfem.transformation(scale=[4, 0.01], translation=[0, 0]),
 )
 body_2.material(material_2)
+body_2.rhs(value=[0, 9.81])
 
 body_2.dirichlet(
     value=[
@@ -51,37 +53,36 @@ body_2.dirichlet(
     ],
 )
 
-polyfem_config = model.config(
-    contact=polyfem.contact(enabled=True, dhat=0.001, epsv=0.004, friction_coefficient=0.5),
-    solver=polyfem.solver(
-        linear=polyfem.linear(solver='Eigen::PardisoLDLT'),
-        nonlinear=polyfem.nonlinear(
-            iterations_per_strategy=1,
-            line_search=polyfem.line_search(method='RobustArmijo'),
-            solver='Newton',
-        ),
-        advanced=polyfem.solver_advanced(lump_mass_matrix=True),
-        contact=polyfem.solver_contact(friction_iterations=10),
+model.contact(enabled=True, dhat=0.001, epsv=0.004, friction_coefficient=0.5)
+model.solver(
+    linear=polyfem.linear(solver='Eigen::PardisoLDLT'),
+    nonlinear=polyfem.nonlinear(
+        iterations_per_strategy=1,
+        line_search=polyfem.line_search(method='RobustArmijo'),
+        solver='Newton',
     ),
-    output=polyfem.output(
-        json='sim.json',
-        paraview=polyfem.output_paraview(
-            file_name='sim.pvd',
-            options=polyfem.options(
-                material=True,
-                body_ids=True,
-                tensor_values=False,
-                discretization_order=False,
-                nodes=False,
-            ),
-            vismesh_rel_area=10000000,
-        ),
-        advanced=polyfem.output_advanced(save_solve_sequence_debug=True, save_time_sequence=True),
-        directory='results/2D/friction/rotating-slope',
-    ),
-    time=polyfem.time(polyfem.object1(dt=0.01, tend=1)),
-    rhs=[0, 9.81],
+    advanced=polyfem.solver_advanced(lump_mass_matrix=True),
+    contact=polyfem.solver_contact(friction_iterations=10),
 )
+model.output(
+    json='sim.json',
+    paraview=polyfem.output_paraview(
+        file_name='sim.pvd',
+        options=polyfem.options(
+            material=True,
+            body_ids=True,
+            tensor_values=False,
+            discretization_order=False,
+            nodes=False,
+        ),
+        vismesh_rel_area=10000000,
+    ),
+    advanced=polyfem.output_advanced(save_solve_sequence_debug=True, save_time_sequence=True),
+    directory='results/2D/friction/rotating-slope',
+)
+model.time(dt=0.01, tend=1)
+
+polyfem_config = model.config()
 
 
 if __name__ == "__main__":

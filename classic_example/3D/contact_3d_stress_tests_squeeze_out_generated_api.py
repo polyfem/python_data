@@ -32,6 +32,7 @@ body_1 = model.mesh(
     transformation=polyfem.transformation(translation=[0, -1.05, 0], rotation=[0, 0, 0], scale=[0.45]),
     volume_selection=1,
 )
+body_1.rhs(value=[0, 9.81, 0])
 
 body_2 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "creatures" / "gargoyle.msh"),
@@ -42,6 +43,7 @@ body_2 = model.mesh(
     ),
     volume_selection=2,
 )
+body_2.rhs(value=[0, 9.81, 0])
 
 body_3 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "creatures" / "monkey.msh"),
@@ -52,12 +54,14 @@ body_3 = model.mesh(
     ),
     volume_selection=3,
 )
+body_3.rhs(value=[0, 9.81, 0])
 
 body_4 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "creatures" / "octocat.msh"),
     transformation=polyfem.transformation(translation=[0, 1.9, 0], rotation=[-90, 0, 0], scale=[0.01]),
     volume_selection=4,
 )
+body_4.rhs(value=[0, 9.81, 0])
 
 obstacle_5 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "unit-plane.obj"),
@@ -73,44 +77,40 @@ model.mesh(
 
 obstacle_5.obstacle_displacement(value=[0, 'max(-0.3 * t, -3.79)', 0])
 
-polyfem_config = model.config(
-    contact=polyfem.contact(enabled=True, dhat=0.001),
-    solver=polyfem.solver(
-        linear=polyfem.linear(solver='Eigen::PardisoLDLT'),
-        nonlinear=polyfem.nonlinear(
-            iterations_per_strategy=1,
-            line_search=polyfem.line_search(method='RobustArmijo'),
-            solver='Newton',
-        ),
-        advanced=polyfem.solver_advanced(lump_mass_matrix=True),
+model.contact(enabled=True, dhat=0.001)
+model.solver(
+    linear=polyfem.linear(solver='Eigen::PardisoLDLT'),
+    nonlinear=polyfem.nonlinear(
+        iterations_per_strategy=1,
+        line_search=polyfem.line_search(method='RobustArmijo'),
+        solver='Newton',
     ),
-    output=polyfem.output(
-        json='sim.json',
-        paraview=polyfem.output_paraview(
-            file_name='squeeze-out.pvd',
-            options=polyfem.options(
-                material=True,
-                body_ids=True,
-                tensor_values=False,
-                discretization_order=False,
-                nodes=False,
-            ),
-            vismesh_rel_area=10000000,
-        ),
-        advanced=polyfem.output_advanced(
-            save_solve_sequence_debug=False,
-            save_time_sequence=True,
-        ),
-        directory='results/3D/stress-tests/squeeze-out',
-    ),
-    time=polyfem.time(polyfem.object1(tend=15, dt=0.01)),
-    materials=polyfem.materials(
-        items=[
-            polyfem.neo_hookean(E=50000, nu=0.4, rho=1000),
-        ],
-    ),
-    rhs=[0, 9.81, 0],
+    advanced=polyfem.solver_advanced(lump_mass_matrix=True),
 )
+model.output(
+    json='sim.json',
+    paraview=polyfem.output_paraview(
+        file_name='squeeze-out.pvd',
+        options=polyfem.options(
+            material=True,
+            body_ids=True,
+            tensor_values=False,
+            discretization_order=False,
+            nodes=False,
+        ),
+        vismesh_rel_area=10000000,
+    ),
+    advanced=polyfem.output_advanced(save_solve_sequence_debug=False, save_time_sequence=True),
+    directory='results/3D/stress-tests/squeeze-out',
+)
+model.time(tend=15, dt=0.01)
+model.materials(
+    items=[
+        polyfem.neo_hookean(E=50000, nu=0.4, rho=1000),
+    ],
+)
+
+polyfem_config = model.config()
 
 
 if __name__ == "__main__":

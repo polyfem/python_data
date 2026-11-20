@@ -39,60 +39,60 @@ model.mesh(
 
 body_1.dirichlet(value=[0, 0])
 
-polyfem_config = model.config(
-    contact=polyfem.contact(enabled=True, dhat=0.001, friction_coefficient=0.6),
-    solver=polyfem.solver(
-        linear=polyfem.linear(solver='Eigen::PardisoLDLT'),
-        nonlinear=polyfem.nonlinear(
-            iterations_per_strategy=1,
-            line_search=polyfem.line_search(method='RobustArmijo'),
-            solver='Newton',
-            max_iterations=300,
-            norm_type='Euclidean',
-            rel_grad_norm_tol=0,
-            first_grad_norm_tol=1e-10,
-            grad_norm_tol=1e-05,
-            x_delta_tol=1e-12,
-            advanced=polyfem.nonlinear_advanced(f_delta_tol=1e-05),
-        ),
-        advanced=polyfem.solver_advanced(
-            lump_mass_matrix=True,
-            lagged_regularization_weight=10,
-            lagged_regularization_iterations=1,
-        ),
-        contact=polyfem.solver_contact(
-            friction_iterations=-1,
-            friction_convergence_tol=0.01,
-            barrier_stiffness=1000000000.0,
-        ),
+model.contact(enabled=True, dhat=0.001, friction_coefficient=0.6)
+model.solver(
+    linear=polyfem.linear(solver='Eigen::PardisoLDLT'),
+    nonlinear=polyfem.nonlinear(
+        iterations_per_strategy=1,
+        line_search=polyfem.line_search(method='RobustArmijo'),
+        solver='Newton',
+        max_iterations=300,
+        norm_type='Euclidean',
+        rel_grad_norm_tol=0,
+        first_grad_norm_tol=1e-10,
+        grad_norm_tol=1e-05,
+        x_delta_tol=1e-12,
+        advanced=polyfem.nonlinear_advanced(f_delta_tol=1e-05),
     ),
-    output=polyfem.output(
-        json='sim.json',
-        paraview=polyfem.output_paraview(
-            file_name='sol.vtu',
-            options=polyfem.options(
-                material=True,
-                body_ids=True,
-                tensor_values=False,
-                discretization_order=False,
-                nodes=False,
-            ),
-            vismesh_rel_area=10000000,
-        ),
-        advanced=polyfem.output_advanced(
-            save_solve_sequence_debug=True,
-            save_time_sequence=False,
-            save_nl_solve_sequence=False,
-        ),
-        directory='results/2D/static/friction-slope',
+    advanced=polyfem.solver_advanced(
+        lump_mass_matrix=True,
+        lagged_regularization_weight=10,
+        lagged_regularization_iterations=1,
     ),
-    materials=polyfem.materials(
-        items=[
-            polyfem.neo_hookean(E=70000000.0, nu=0.48, rho=1240),
-        ],
+    contact=polyfem.solver_contact(
+        friction_iterations=-1,
+        friction_convergence_tol=0.01,
+        barrier_stiffness=1000000000.0,
     ),
-    rhs=[0, 9.81],
 )
+model.output(
+    json='sim.json',
+    paraview=polyfem.output_paraview(
+        file_name='sol.vtu',
+        options=polyfem.options(
+            material=True,
+            body_ids=True,
+            tensor_values=False,
+            discretization_order=False,
+            nodes=False,
+        ),
+        vismesh_rel_area=10000000,
+    ),
+    advanced=polyfem.output_advanced(
+        save_solve_sequence_debug=True,
+        save_time_sequence=False,
+        save_nl_solve_sequence=False,
+    ),
+    directory='results/2D/static/friction-slope',
+)
+model.materials(
+    items=[
+        polyfem.neo_hookean(E=70000000.0, nu=0.48, rho=1240),
+    ],
+)
+model.rhs([0, 9.81])
+
+polyfem_config = model.config()
 
 
 if __name__ == "__main__":

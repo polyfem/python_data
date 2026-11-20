@@ -34,6 +34,7 @@ body_1 = model.mesh(
     transformation=polyfem.transformation(translation=[0, 0, 0], scale=[1.0]),
 )
 body_1.material(material_1)
+body_1.rhs(value=[0, 9.81, 0])
 
 obstacle_2 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "verschoor" / "roller0.obj"),
@@ -114,43 +115,39 @@ obstacle_7.obstacle_displacement(
     ],
 )
 
-polyfem_config = model.config(
-    contact=polyfem.contact(enabled=True, dhat=0.0001, epsv=0.001, friction_coefficient=0.5),
-    solver=polyfem.solver(
-        linear=polyfem.linear(solver='Eigen::PardisoLDLT'),
-        nonlinear=polyfem.nonlinear(
-            iterations_per_strategy=1,
-            line_search=polyfem.line_search(method='RobustArmijo'),
-            solver='Newton',
-        ),
-        advanced=polyfem.solver_advanced(lump_mass_matrix=True),
-        contact=polyfem.solver_contact(friction_iterations=1),
+model.contact(enabled=True, dhat=0.0001, epsv=0.001, friction_coefficient=0.5)
+model.solver(
+    linear=polyfem.linear(solver='Eigen::PardisoLDLT'),
+    nonlinear=polyfem.nonlinear(
+        iterations_per_strategy=1,
+        line_search=polyfem.line_search(method='RobustArmijo'),
+        solver='Newton',
     ),
-    output=polyfem.output(
-        json='sim.json',
-        paraview=polyfem.output_paraview(
-            file_name='armadillo-rollers.pvd',
-            options=polyfem.options(
-                material=True,
-                body_ids=True,
-                tensor_values=False,
-                discretization_order=False,
-                nodes=False,
-                friction_forces=True,
-            ),
-            vismesh_rel_area=10000000,
-            volume=False,
-            surface=True,
-        ),
-        advanced=polyfem.output_advanced(
-            save_solve_sequence_debug=False,
-            save_time_sequence=True,
-        ),
-        directory='results/3D/friction/armadillo-roller',
-    ),
-    time=polyfem.time(polyfem.object1(tend=10, dt=0.025)),
-    rhs=[0, 9.81, 0],
+    advanced=polyfem.solver_advanced(lump_mass_matrix=True),
+    contact=polyfem.solver_contact(friction_iterations=1),
 )
+model.output(
+    json='sim.json',
+    paraview=polyfem.output_paraview(
+        file_name='armadillo-rollers.pvd',
+        options=polyfem.options(
+            material=True,
+            body_ids=True,
+            tensor_values=False,
+            discretization_order=False,
+            nodes=False,
+            friction_forces=True,
+        ),
+        vismesh_rel_area=10000000,
+        volume=False,
+        surface=True,
+    ),
+    advanced=polyfem.output_advanced(save_solve_sequence_debug=False, save_time_sequence=True),
+    directory='results/3D/friction/armadillo-roller',
+)
+model.time(tend=10, dt=0.025)
+
+polyfem_config = model.config()
 
 
 if __name__ == "__main__":

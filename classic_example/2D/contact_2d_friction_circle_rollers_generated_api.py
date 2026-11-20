@@ -35,12 +35,14 @@ center = model.mesh(
     transformation=polyfem.transformation(translation=[0, 0.5], scale=2),
 )
 center.material(rubber)
+center.rhs(value=[0, 9.81])
 
 left_roller = model.mesh(
     mesh=str(MESHES_DIR / "2D" / "simple" / "circle" / "circle14.obj"),
     transformation=polyfem.transformation(translation=[-0.5, -1], scale=0.8),
 )
 left_roller.material(steel)
+left_roller.rhs(value=[0, 9.81])
 left_roller.dirichlet(
     value=[
         "rotate_2D_x(x + 0.5, y + 1, -t * pi / 2) - (x + 0.5)",
@@ -54,6 +56,7 @@ right_roller = model.mesh(
     transformation=polyfem.transformation(translation=[0.5, -1], scale=0.8),
 )
 right_roller.material(steel)
+right_roller.rhs(value=[0, 9.81])
 right_roller.dirichlet(
     value=[
         "rotate_2D_x(x - 0.5, y + 1, t * pi / 2) - (x - 0.5)",
@@ -67,9 +70,18 @@ ground = model.mesh(
     transformation=polyfem.transformation(translation=[0, -4.01], scale=[8, 0.02]),
 )
 ground.material(steel)
+ground.rhs(value=[0, 9.81])
 ground.dirichlet(value=[0, 0])
 
-solver = polyfem.solver(
+model.contact(
+    enabled=True,
+    dhat=0.001,
+    epsv=0.004,
+    friction_coefficient=0.5,
+)
+model.time(dt=0.01, tend=10)
+
+model.solver(
     linear=polyfem.linear(solver="Eigen::PardisoLDLT"),
     nonlinear=polyfem.nonlinear(
         iterations_per_strategy=1,
@@ -80,7 +92,7 @@ solver = polyfem.solver(
     advanced=polyfem.solver_advanced(lump_mass_matrix=True),
 )
 
-output = polyfem.output(
+model.output(
     directory="results/2D/friction/circle-rollers",
     json="sim.json",
     paraview=polyfem.output_paraview(
@@ -100,19 +112,7 @@ output = polyfem.output(
     ),
 )
 
-polyfem_config = model.config(
-    rhs=[0, 9.81],
-    time_tend=10,
-    time_dt=0.01,
-    contact=polyfem.contact(
-        enabled=True,
-        dhat=0.001,
-        epsv=0.004,
-        friction_coefficient=0.5,
-    ),
-    solver=solver,
-    output=output,
-)
+polyfem_config = model.config()
 
 
 if __name__ == "__main__":

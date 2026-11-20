@@ -36,6 +36,7 @@ body_1 = model.mesh(
     ),
     volume_selection=1,
 )
+body_1.rhs(value=[0, 0, 0])
 body_1_surface_1 = body_1.surface_box(box=[[0.97, 0, 0], [1, 1, 1]], relative=True)
 
 model.mesh(
@@ -53,51 +54,47 @@ body_1_surface_1.dirichlet(
     value=['min(0.5*t, 10)', 0, 0],
 )
 
-polyfem_config = model.config(
-    contact=polyfem.contact(enabled=True, dhat=0.001),
-    solver=polyfem.solver(
-        linear=polyfem.linear(solver='Eigen::PardisoLDLT'),
-        nonlinear=polyfem.nonlinear(
-            iterations_per_strategy=1,
-            line_search=polyfem.line_search(method='RobustArmijo'),
-            solver='Newton',
-            max_iterations=10000,
-        ),
-        advanced=polyfem.solver_advanced(lump_mass_matrix=True),
-        augmented_lagrangian=polyfem.augmented_lagrangian(
-            nonlinear=polyfem.augmented_lagrangian_nonlinear(
-                max_iterations=100,
-                allow_out_of_iterations=True,
-            ),
+model.contact(enabled=True, dhat=0.001)
+model.solver(
+    linear=polyfem.linear(solver='Eigen::PardisoLDLT'),
+    nonlinear=polyfem.nonlinear(
+        iterations_per_strategy=1,
+        line_search=polyfem.line_search(method='RobustArmijo'),
+        solver='Newton',
+        max_iterations=10000,
+    ),
+    advanced=polyfem.solver_advanced(lump_mass_matrix=True),
+    augmented_lagrangian=polyfem.augmented_lagrangian(
+        nonlinear=polyfem.augmented_lagrangian_nonlinear(
+            max_iterations=100,
+            allow_out_of_iterations=True,
         ),
     ),
-    output=polyfem.output(
-        json='sim.json',
-        paraview=polyfem.output_paraview(
-            file_name='dolphin-funnel.pvd',
-            options=polyfem.options(
-                material=True,
-                body_ids=True,
-                tensor_values=False,
-                discretization_order=False,
-                nodes=False,
-            ),
-            vismesh_rel_area=10000000,
-        ),
-        advanced=polyfem.output_advanced(
-            save_solve_sequence_debug=False,
-            save_time_sequence=True,
-        ),
-        directory='results/3D/stress-tests/dolphin-funnel',
-    ),
-    materials=polyfem.materials(
-        items=[
-            polyfem.neo_hookean(E=10000, nu=0.4, rho=1000),
-        ],
-    ),
-    time=polyfem.time(polyfem.object1(dt=0.04, tend=32)),
-    rhs=[0, 0, 0],
 )
+model.output(
+    json='sim.json',
+    paraview=polyfem.output_paraview(
+        file_name='dolphin-funnel.pvd',
+        options=polyfem.options(
+            material=True,
+            body_ids=True,
+            tensor_values=False,
+            discretization_order=False,
+            nodes=False,
+        ),
+        vismesh_rel_area=10000000,
+    ),
+    advanced=polyfem.output_advanced(save_solve_sequence_debug=False, save_time_sequence=True),
+    directory='results/3D/stress-tests/dolphin-funnel',
+)
+model.materials(
+    items=[
+        polyfem.neo_hookean(E=10000, nu=0.4, rho=1000),
+    ],
+)
+model.time(dt=0.04, tend=32)
+
+polyfem_config = model.config()
 
 
 if __name__ == "__main__":

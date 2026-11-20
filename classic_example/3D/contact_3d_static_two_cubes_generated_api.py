@@ -42,50 +42,50 @@ model.mesh(
 
 body_1_surface_1.dirichlet(value=[0, 0, 0])
 
-polyfem_config = model.config(
-    contact=polyfem.contact(enabled=True, dhat=0.001, friction_coefficient=0.5),
-    solver=polyfem.solver(
-        linear=polyfem.linear(solver='Eigen::SimplicialLDLT'),
-        nonlinear=polyfem.nonlinear(
-            iterations_per_strategy=1,
-            line_search=polyfem.line_search(method='RobustArmijo'),
-            solver='Newton',
-            grad_norm_tol=1e-05,
-        ),
-        advanced=polyfem.solver_advanced(
-            lump_mass_matrix=True,
-            lagged_regularization_weight=500,
-            lagged_regularization_iterations=2,
-        ),
-        contact=polyfem.solver_contact(friction_iterations=-1, barrier_stiffness=1000000000.0),
+model.contact(enabled=True, dhat=0.001, friction_coefficient=0.5)
+model.solver(
+    linear=polyfem.linear(solver='Eigen::SimplicialLDLT'),
+    nonlinear=polyfem.nonlinear(
+        iterations_per_strategy=1,
+        line_search=polyfem.line_search(method='RobustArmijo'),
+        solver='Newton',
+        grad_norm_tol=1e-05,
     ),
-    output=polyfem.output(
-        json='sim.json',
-        paraview=polyfem.output_paraview(
-            file_name='sol.vtu',
-            options=polyfem.options(
-                material=True,
-                body_ids=True,
-                tensor_values=False,
-                discretization_order=False,
-                nodes=False,
-            ),
-            vismesh_rel_area=10000000,
-        ),
-        advanced=polyfem.output_advanced(
-            save_solve_sequence_debug=True,
-            save_time_sequence=False,
-            save_nl_solve_sequence=False,
-        ),
-        directory='results/3D/static/two-cubes',
+    advanced=polyfem.solver_advanced(
+        lump_mass_matrix=True,
+        lagged_regularization_weight=500,
+        lagged_regularization_iterations=2,
     ),
-    materials=polyfem.materials(
-        items=[
-            polyfem.neo_hookean(E=100000, nu=0.4, rho=1000),
-        ],
-    ),
-    rhs=[0, 9.81, 0],
+    contact=polyfem.solver_contact(friction_iterations=-1, barrier_stiffness=1000000000.0),
 )
+model.output(
+    json='sim.json',
+    paraview=polyfem.output_paraview(
+        file_name='sol.vtu',
+        options=polyfem.options(
+            material=True,
+            body_ids=True,
+            tensor_values=False,
+            discretization_order=False,
+            nodes=False,
+        ),
+        vismesh_rel_area=10000000,
+    ),
+    advanced=polyfem.output_advanced(
+        save_solve_sequence_debug=True,
+        save_time_sequence=False,
+        save_nl_solve_sequence=False,
+    ),
+    directory='results/3D/static/two-cubes',
+)
+model.materials(
+    items=[
+        polyfem.neo_hookean(E=100000, nu=0.4, rho=1000),
+    ],
+)
+model.rhs([0, 9.81, 0])
+
+polyfem_config = model.config()
 
 
 if __name__ == "__main__":

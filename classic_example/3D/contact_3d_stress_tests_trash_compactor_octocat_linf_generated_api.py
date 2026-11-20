@@ -34,6 +34,7 @@ body_1 = model.mesh(
     transformation=polyfem.transformation(translation=[0, -0.2, 0], rotation=[-90, 0, 0], scale=[0.02]),
 )
 body_1.material(material_1)
+body_1.rhs(value=[0, 0, 0])
 
 obstacle_2 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "obstacles" / "unit-plane.obj"),
@@ -94,40 +95,36 @@ obstacle_5.obstacle_displacement(value=[0, 'smooth_abs(t - 0.95, 5) - 0.95', 0])
 obstacle_6.obstacle_displacement(value=[0, 0, '-smooth_abs(t - 0.95, 5) + 0.95'])
 obstacle_7.obstacle_displacement(value=[0, 0, 'smooth_abs(t - 0.95, 5) - 0.95'])
 
-polyfem_config = model.config(
-    contact=polyfem.contact(enabled=True, dhat=0.001),
-    solver=polyfem.solver(
-        linear=polyfem.linear(solver='Eigen::PardisoLDLT'),
-        nonlinear=polyfem.nonlinear(
-            iterations_per_strategy=1,
-            line_search=polyfem.line_search(method='RobustArmijo'),
-            solver='Newton',
-            norm_type='Linf',
-        ),
-        advanced=polyfem.solver_advanced(lump_mass_matrix=True),
+model.contact(enabled=True, dhat=0.001)
+model.solver(
+    linear=polyfem.linear(solver='Eigen::PardisoLDLT'),
+    nonlinear=polyfem.nonlinear(
+        iterations_per_strategy=1,
+        line_search=polyfem.line_search(method='RobustArmijo'),
+        solver='Newton',
+        norm_type='Linf',
     ),
-    output=polyfem.output(
-        json='sim.json',
-        paraview=polyfem.output_paraview(
-            file_name='sim.pvd',
-            options=polyfem.options(
-                material=True,
-                body_ids=True,
-                tensor_values=False,
-                discretization_order=False,
-                nodes=False,
-            ),
-            vismesh_rel_area=10000000,
-        ),
-        advanced=polyfem.output_advanced(
-            save_solve_sequence_debug=False,
-            save_time_sequence=True,
-        ),
-        directory='results/3D/stress-tests/trash-compactor-octocat-Linf',
-    ),
-    time=polyfem.time(polyfem.object1(tend=2.5, dt=0.01)),
-    rhs=[0, 0, 0],
+    advanced=polyfem.solver_advanced(lump_mass_matrix=True),
 )
+model.output(
+    json='sim.json',
+    paraview=polyfem.output_paraview(
+        file_name='sim.pvd',
+        options=polyfem.options(
+            material=True,
+            body_ids=True,
+            tensor_values=False,
+            discretization_order=False,
+            nodes=False,
+        ),
+        vismesh_rel_area=10000000,
+    ),
+    advanced=polyfem.output_advanced(save_solve_sequence_debug=False, save_time_sequence=True),
+    directory='results/3D/stress-tests/trash-compactor-octocat-Linf',
+)
+model.time(tend=2.5, dt=0.01)
+
+polyfem_config = model.config()
 
 
 if __name__ == "__main__":

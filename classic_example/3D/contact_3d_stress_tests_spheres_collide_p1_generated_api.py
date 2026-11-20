@@ -59,49 +59,47 @@ body_1 = model.mesh(
     transformation=polyfem.transformation(scale=[1.0], translation=[0, 0, 0]),
 )
 body_1.material(material_1)
+body_1.rhs(value=[0, 0, 0])
 
 body_2 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "simple" / "sphere" / "coarse" / "icosphere.msh"),
     transformation=polyfem.transformation(scale=[0.3], translation=[-1.6, 0, 0]),
 )
 body_2.material(material_2)
+body_2.rhs(value=[0, 0, 0])
 
 body_2.velocity(polyfem.velocity_item(value=[10, 0, 0]))
 
-polyfem_config = model.config(
-    contact=polyfem.contact(enabled=True, dhat=0.001),
-    solver=polyfem.solver(
-        linear=polyfem.linear(solver='Eigen::PardisoLDLT'),
-        nonlinear=polyfem.nonlinear(
-            iterations_per_strategy=1,
-            line_search=polyfem.line_search(method='RobustArmijo'),
-            solver='Newton',
-        ),
-        advanced=polyfem.solver_advanced(lump_mass_matrix=False, check_inversion='Conservative'),
+model.contact(enabled=True, dhat=0.001)
+model.solver(
+    linear=polyfem.linear(solver='Eigen::PardisoLDLT'),
+    nonlinear=polyfem.nonlinear(
+        iterations_per_strategy=1,
+        line_search=polyfem.line_search(method='RobustArmijo'),
+        solver='Newton',
     ),
-    output=polyfem.output(
-        json='sim.json',
-        paraview=polyfem.output_paraview(
-            file_name='sim.pvd',
-            options=polyfem.options(
-                material=True,
-                body_ids=True,
-                tensor_values=False,
-                discretization_order=False,
-                nodes=False,
-            ),
-            vismesh_rel_area=10000000,
-        ),
-        advanced=polyfem.output_advanced(
-            save_solve_sequence_debug=False,
-            save_time_sequence=True,
-        ),
-        directory='results/3D/stress-tests/spheres_collide-P1',
-    ),
-    time=polyfem.time(polyfem.object1(tend=1, dt=0.01)),
-    space=polyfem.space(discr_order=1),
-    rhs=[0, 0, 0],
+    advanced=polyfem.solver_advanced(lump_mass_matrix=False, check_inversion='Conservative'),
 )
+model.output(
+    json='sim.json',
+    paraview=polyfem.output_paraview(
+        file_name='sim.pvd',
+        options=polyfem.options(
+            material=True,
+            body_ids=True,
+            tensor_values=False,
+            discretization_order=False,
+            nodes=False,
+        ),
+        vismesh_rel_area=10000000,
+    ),
+    advanced=polyfem.output_advanced(save_solve_sequence_debug=False, save_time_sequence=True),
+    directory='results/3D/stress-tests/spheres_collide-P1',
+)
+model.time(tend=1, dt=0.01)
+model.space(discr_order=1)
+
+polyfem_config = model.config()
 
 
 if __name__ == "__main__":

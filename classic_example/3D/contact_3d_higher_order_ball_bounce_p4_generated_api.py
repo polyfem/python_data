@@ -34,6 +34,7 @@ body_1 = model.mesh(
     transformation=polyfem.transformation(scale=[0.11938]),
 )
 body_1.material(material_1)
+body_1.rhs(value=[0, 9.81, 0])
 
 model.mesh(
     is_obstacle=True,
@@ -41,53 +42,49 @@ model.mesh(
     transformation=polyfem.transformation(dimensions=[1, 0, 1], translation=[0, -0.2, 0]),
 )
 
-polyfem_config = model.config(
-    contact=polyfem.contact(
-        enabled=True,
-        dhat=0.001,
-        collision_mesh=polyfem.collision_mesh(
-            polyfem.collision_mesh_object2(
-                max_edge_length=0.01,
-                tessellation_type='irregular',
-            ),
+model.contact(
+    enabled=True,
+    dhat=0.001,
+    collision_mesh=polyfem.collision_mesh(
+        polyfem.collision_mesh_object2(
+            max_edge_length=0.01,
+            tessellation_type='irregular',
         ),
-        friction_coefficient=0.2,
     ),
-    solver=polyfem.solver(
-        linear=polyfem.linear(solver='Eigen::PardisoLDLT'),
-        nonlinear=polyfem.nonlinear(
-            iterations_per_strategy=1,
-            line_search=polyfem.line_search(method='RobustArmijo'),
-            solver='Newton',
-        ),
-        advanced=polyfem.solver_advanced(lump_mass_matrix=False),
-    ),
-    output=polyfem.output(
-        json='sim.json',
-        paraview=polyfem.output_paraview(
-            file_name='sim.pvd',
-            options=polyfem.options(
-                material=True,
-                body_ids=True,
-                tensor_values=False,
-                discretization_order=False,
-                nodes=False,
-                contact_forces=True,
-            ),
-            vismesh_rel_area=10000000,
-            high_order_mesh=True,
-            skip_frame=10,
-        ),
-        advanced=polyfem.output_advanced(
-            save_solve_sequence_debug=False,
-            save_time_sequence=True,
-        ),
-        directory='results/3D/higher-order/ball-bounce/P4',
-    ),
-    space=polyfem.space(discr_order=4),
-    time=polyfem.time(polyfem.object1(dt=0.001, integrator='BDF2', tend=1)),
-    rhs=[0, 9.81, 0],
+    friction_coefficient=0.2,
 )
+model.solver(
+    linear=polyfem.linear(solver='Eigen::PardisoLDLT'),
+    nonlinear=polyfem.nonlinear(
+        iterations_per_strategy=1,
+        line_search=polyfem.line_search(method='RobustArmijo'),
+        solver='Newton',
+    ),
+    advanced=polyfem.solver_advanced(lump_mass_matrix=False),
+)
+model.output(
+    json='sim.json',
+    paraview=polyfem.output_paraview(
+        file_name='sim.pvd',
+        options=polyfem.options(
+            material=True,
+            body_ids=True,
+            tensor_values=False,
+            discretization_order=False,
+            nodes=False,
+            contact_forces=True,
+        ),
+        vismesh_rel_area=10000000,
+        high_order_mesh=True,
+        skip_frame=10,
+    ),
+    advanced=polyfem.output_advanced(save_solve_sequence_debug=False, save_time_sequence=True),
+    directory='results/3D/higher-order/ball-bounce/P4',
+)
+model.space(discr_order=4)
+model.time(dt=0.001, integrator='BDF2', tend=1)
+
+polyfem_config = model.config()
 
 
 if __name__ == "__main__":

@@ -34,6 +34,7 @@ body_1 = model.mesh(
     transformation=polyfem.transformation(scale=[6.0]),
 )
 body_1.material(material_1)
+body_1.rhs(value=[0, 9800, 0])
 
 obstacle_2 = model.mesh(
     is_obstacle=True,
@@ -49,52 +50,48 @@ model.mesh(
 
 obstacle_2.obstacle_displacement(value=[0, '4.5 * smooth_abs(t - 1, 5) - 4.5', 0])
 
-polyfem_config = model.config(
-    contact=polyfem.contact(
-        enabled=True,
-        dhat=0.001,
-        collision_mesh=polyfem.collision_mesh(
-            polyfem.collision_mesh_object2(
-                max_edge_length=0.1,
-                tessellation_type='irregular',
-            ),
+model.contact(
+    enabled=True,
+    dhat=0.001,
+    collision_mesh=polyfem.collision_mesh(
+        polyfem.collision_mesh_object2(
+            max_edge_length=0.1,
+            tessellation_type='irregular',
         ),
-        friction_coefficient=0.3,
     ),
-    solver=polyfem.solver(
-        linear=polyfem.linear(solver='Eigen::PardisoLDLT'),
-        nonlinear=polyfem.nonlinear(
-            iterations_per_strategy=1,
-            line_search=polyfem.line_search(method='RobustArmijo'),
-            solver='Newton',
-        ),
-        advanced=polyfem.solver_advanced(lump_mass_matrix=False),
-    ),
-    output=polyfem.output(
-        json='sim.json',
-        paraview=polyfem.output_paraview(
-            file_name='sim.pvd',
-            options=polyfem.options(
-                material=True,
-                body_ids=True,
-                tensor_values=False,
-                discretization_order=False,
-                nodes=False,
-                contact_forces=True,
-            ),
-            vismesh_rel_area=10000000,
-            high_order_mesh=True,
-        ),
-        advanced=polyfem.output_advanced(
-            save_solve_sequence_debug=False,
-            save_time_sequence=True,
-        ),
-        directory='results/3D/higher-order/microstructure',
-    ),
-    space=polyfem.space(discr_order=2),
-    time=polyfem.time(polyfem.object1(dt=0.01, tend=2)),
-    rhs=[0, 9800, 0],
+    friction_coefficient=0.3,
 )
+model.solver(
+    linear=polyfem.linear(solver='Eigen::PardisoLDLT'),
+    nonlinear=polyfem.nonlinear(
+        iterations_per_strategy=1,
+        line_search=polyfem.line_search(method='RobustArmijo'),
+        solver='Newton',
+    ),
+    advanced=polyfem.solver_advanced(lump_mass_matrix=False),
+)
+model.output(
+    json='sim.json',
+    paraview=polyfem.output_paraview(
+        file_name='sim.pvd',
+        options=polyfem.options(
+            material=True,
+            body_ids=True,
+            tensor_values=False,
+            discretization_order=False,
+            nodes=False,
+            contact_forces=True,
+        ),
+        vismesh_rel_area=10000000,
+        high_order_mesh=True,
+    ),
+    advanced=polyfem.output_advanced(save_solve_sequence_debug=False, save_time_sequence=True),
+    directory='results/3D/higher-order/microstructure',
+)
+model.space(discr_order=2)
+model.time(dt=0.01, tend=2)
+
+polyfem_config = model.config()
 
 
 if __name__ == "__main__":

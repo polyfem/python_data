@@ -39,6 +39,7 @@ body_1 = model.mesh(
     ),
 )
 body_1.material(material_1)
+body_1.rhs(value=[0, 9.8, 0])
 body_1_surface_file_1111 = body_1.surface_from_file(str(CONTACT_EXAMPLES_DIR / "3D" / "hex_tet" / "surface_sidesets11.txt"))
 
 body_2 = model.mesh(
@@ -50,48 +51,45 @@ body_2 = model.mesh(
     ),
 )
 body_2.material(material_2)
+body_2.rhs(value=[0, 9.8, 0])
 
 body_1_surface_file_1111.dirichlet(dimension=[True, True, True], value=[0, 0, 0])
 
-polyfem_config = model.config(
-    contact=polyfem.contact(
-        enabled=True,
-        dhat=0.001,
-        epsv=0.001,
-        friction_coefficient=0.0,
-        use_convergent_formulation=False,
-    ),
-    solver=polyfem.solver(
-        linear=polyfem.linear(solver='Eigen::PardisoLDLT'),
-        nonlinear=polyfem.nonlinear(
-            iterations_per_strategy=1,
-            line_search=polyfem.line_search(method='RobustArmijo'),
-            solver='Newton',
-        ),
-        advanced=polyfem.solver_advanced(lump_mass_matrix=True),
-    ),
-    output=polyfem.output(
-        json='sim.json',
-        paraview=polyfem.output_paraview(
-            file_name='sim.pvd',
-            options=polyfem.options(
-                material=True,
-                body_ids=True,
-                tensor_values=False,
-                discretization_order=False,
-                nodes=False,
-            ),
-            vismesh_rel_area=10000000,
-        ),
-        advanced=polyfem.output_advanced(
-            save_solve_sequence_debug=False,
-            save_time_sequence=True,
-        ),
-        directory='results/3D/hex_tet/params',
-    ),
-    time=polyfem.time(polyfem.object1(dt=0.025, integrator='ImplicitEuler', tend=5.0)),
-    rhs=[0, 9.8, 0],
+model.contact(
+    enabled=True,
+    dhat=0.001,
+    epsv=0.001,
+    friction_coefficient=0.0,
+    use_convergent_formulation=False,
 )
+model.solver(
+    linear=polyfem.linear(solver='Eigen::PardisoLDLT'),
+    nonlinear=polyfem.nonlinear(
+        iterations_per_strategy=1,
+        line_search=polyfem.line_search(method='RobustArmijo'),
+        solver='Newton',
+    ),
+    advanced=polyfem.solver_advanced(lump_mass_matrix=True),
+)
+model.output(
+    json='sim.json',
+    paraview=polyfem.output_paraview(
+        file_name='sim.pvd',
+        options=polyfem.options(
+            material=True,
+            body_ids=True,
+            tensor_values=False,
+            discretization_order=False,
+            nodes=False,
+        ),
+        vismesh_rel_area=10000000,
+    ),
+    advanced=polyfem.output_advanced(save_solve_sequence_debug=False, save_time_sequence=True),
+    directory='results/3D/hex_tet/params',
+)
+model.time(dt=0.025, integrator='ImplicitEuler', tend=5.0)
+
+polyfem_config = model.config()
 
 
 if __name__ == "__main__":

@@ -39,44 +39,41 @@ model.mesh_array(
 
 model.mesh(is_obstacle=True, mesh=str(MESHES_DIR / "3D" / "obstacles" / "bowl.obj"))
 
-polyfem_config = model.config(
-    contact=polyfem.contact(enabled=True, dhat=0.001),
-    solver=polyfem.solver(
-        linear=polyfem.linear(solver='Eigen::PardisoLDLT'),
-        nonlinear=polyfem.nonlinear(
-            iterations_per_strategy=1,
-            line_search=polyfem.line_search(method='RobustArmijo'),
-            solver='Newton',
-        ),
-        advanced=polyfem.solver_advanced(lump_mass_matrix=True),
+model.contact(enabled=True, dhat=0.001)
+model.solver(
+    linear=polyfem.linear(solver='Eigen::PardisoLDLT'),
+    nonlinear=polyfem.nonlinear(
+        iterations_per_strategy=1,
+        line_search=polyfem.line_search(method='RobustArmijo'),
+        solver='Newton',
     ),
-    output=polyfem.output(
-        json='sim.json',
-        paraview=polyfem.output_paraview(
-            file_name='sim.pvd',
-            options=polyfem.options(
-                material=True,
-                body_ids=True,
-                tensor_values=False,
-                discretization_order=False,
-                nodes=False,
-            ),
-            vismesh_rel_area=10000000,
-        ),
-        advanced=polyfem.output_advanced(
-            save_solve_sequence_debug=False,
-            save_time_sequence=True,
-        ),
-        directory='results/3D/pile/octocat-bowl',
-    ),
-    materials=polyfem.materials(
-        items=[
-            polyfem.neo_hookean(E=100000.0, nu=0.4, rho=1000),
-        ],
-    ),
-    time=polyfem.time(polyfem.object1(dt=0.07, tend=7)),
-    rhs=[0, 9.81, 0],
+    advanced=polyfem.solver_advanced(lump_mass_matrix=True),
 )
+model.output(
+    json='sim.json',
+    paraview=polyfem.output_paraview(
+        file_name='sim.pvd',
+        options=polyfem.options(
+            material=True,
+            body_ids=True,
+            tensor_values=False,
+            discretization_order=False,
+            nodes=False,
+        ),
+        vismesh_rel_area=10000000,
+    ),
+    advanced=polyfem.output_advanced(save_solve_sequence_debug=False, save_time_sequence=True),
+    directory='results/3D/pile/octocat-bowl',
+)
+model.materials(
+    items=[
+        polyfem.neo_hookean(E=100000.0, nu=0.4, rho=1000),
+    ],
+)
+model.time(dt=0.07, tend=7)
+model.rhs([0, 9.81, 0])
+
+polyfem_config = model.config()
 
 
 if __name__ == "__main__":
