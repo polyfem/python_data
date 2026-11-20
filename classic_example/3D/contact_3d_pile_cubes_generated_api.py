@@ -27,11 +27,12 @@ SOURCE_JSON = CONTACT_EXAMPLES_DIR / "3D" / "pile" / "cubes.json"
 
 model = polyfem.model()
 
-model.mesh_array(
+body_1 = model.mesh_array(
     array=polyfem.array(offset=1.01, relative=True, size=[4, 4, 4]),
     mesh=str(MESHES_DIR / "3D" / "simple" / "cube.msh"),
     transformation=polyfem.mesh_array_transformation(scale=[0.25], translation=[-0.375, 0, -0.375]),
 )
+body_1.rhs(value=[0, 9.81, 0])
 
 model.mesh(is_obstacle=True, mesh=str(MESHES_DIR / "3D" / "obstacles" / "bowl.obj"))
 
@@ -69,7 +70,6 @@ model.materials(
     ],
 )
 model.time(dt=0.01, tend=5.0)
-model.rhs([0, 9.81, 0])
 
 polyfem_config = model.config()
 

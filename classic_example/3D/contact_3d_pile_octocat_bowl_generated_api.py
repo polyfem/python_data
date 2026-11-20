@@ -27,7 +27,7 @@ SOURCE_JSON = CONTACT_EXAMPLES_DIR / "3D" / "pile" / "octocat-bowl.json"
 
 model = polyfem.model()
 
-model.mesh_array(
+body_1 = model.mesh_array(
     array=polyfem.array(offset=1.75, size=[1, 3, 1]),
     mesh=str(MESHES_DIR / "3D" / "creatures" / "octocat.msh"),
     transformation=polyfem.mesh_array_transformation(
@@ -36,6 +36,7 @@ model.mesh_array(
         translation=[0, 4.25, 0],
     ),
 )
+body_1.rhs(value=[0, 9.81, 0])
 
 model.mesh(is_obstacle=True, mesh=str(MESHES_DIR / "3D" / "obstacles" / "bowl.obj"))
 
@@ -71,7 +72,6 @@ model.materials(
     ],
 )
 model.time(dt=0.07, tend=7)
-model.rhs([0, 9.81, 0])
 
 polyfem_config = model.config()
 

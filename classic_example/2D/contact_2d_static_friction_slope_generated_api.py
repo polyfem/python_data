@@ -31,11 +31,13 @@ body_1 = model.mesh(
     mesh=str(MESHES_DIR / "2D" / "simple" / "square.obj"),
     transformation=polyfem.transformation(translation=[0, 0], rotation=[-30.0], scale=[5, 0.02]),
 )
+body_1.rhs(value=[0, 9.81])
 
-model.mesh(
+body_2 = model.mesh(
     mesh=str(MESHES_DIR / "2D" / "simple" / "square1K.msh"),
     transformation=polyfem.transformation(translation=[0.26, 0.4503], rotation=[-30.0], scale=[1.0]),
 )
+body_2.rhs(value=[0, 9.81])
 
 body_1.dirichlet(value=[0, 0])
 
@@ -90,7 +92,6 @@ model.materials(
         polyfem.neo_hookean(E=70000000.0, nu=0.48, rho=1240),
     ],
 )
-model.rhs([0, 9.81])
 
 polyfem_config = model.config()
 

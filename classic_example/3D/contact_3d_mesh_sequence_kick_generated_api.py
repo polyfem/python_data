@@ -27,10 +27,11 @@ SOURCE_JSON = CONTACT_EXAMPLES_DIR / "3D" / "mesh-sequence" / "kick.json"
 
 model = polyfem.model()
 
-model.mesh(
+body_1 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "simple" / "cube.msh"),
     transformation=polyfem.transformation(scale=[0.15], translation=[0.9, 1.25, 1.8]),
 )
+body_1.rhs(value=[0, 0, 0])
 
 model.mesh_sequence(
     fps=24,
@@ -70,7 +71,6 @@ model.materials(
     ],
 )
 model.time(dt=0.02, tend=5)
-model.rhs([0, 0, 0])
 
 polyfem_config = model.config()
 

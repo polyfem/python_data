@@ -32,13 +32,15 @@ body_1 = model.mesh(
     transformation=polyfem.transformation(translation=[0, 0, 0]),
     n_refs=2,
 )
+body_1.rhs(value=[0, 9.81, 0])
 body_1_surface_1 = body_1.surface_axis(axis=-2, position=-0.499)
 
-model.mesh(
+body_2 = model.mesh(
     mesh=str(MESHES_DIR / "3D" / "simple" / "cube.msh"),
     transformation=polyfem.transformation(translation=[0, 1.2, 0]),
     n_refs=2,
 )
+body_2.rhs(value=[0, 9.81, 0])
 
 body_1_surface_1.dirichlet(value=[0, 0, 0])
 
@@ -83,7 +85,6 @@ model.materials(
         polyfem.neo_hookean(E=100000, nu=0.4, rho=1000),
     ],
 )
-model.rhs([0, 9.81, 0])
 
 polyfem_config = model.config()
 

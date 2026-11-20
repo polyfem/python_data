@@ -48,6 +48,11 @@ from polyfempy import solve
 The 93 classic examples build configurations in Python and use assets from
 `polyfem-data/contact`. Each example names its reference JSON in `SOURCE_JSON`;
 a few schema compatibility fallbacks also read that JSON.
+
+The examples set the RHS on each deformable body or mesh array. When all bodies
+receive the same constant vector, the generated JSON uses the reference model's
+single RHS vector and keeps its volume tags.
+
 By default, the helper scripts look for a sibling `polyfem-data` checkout:
 
 - inside `polyfem-python/examples`, this resolves to `polyfem-python/polyfem-data`;
